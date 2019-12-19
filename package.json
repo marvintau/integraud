@@ -1,0 +1,24 @@
+{
+  "name": "integraud",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "PORT=3001 node-dev ./bin/www",
+    "client": "node start-client.js",
+    "start": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "jade": "~1.11.0",
+    "morgan": "~1.9.1",
+    "nedb-promise": "^2.0.1"
+  },
+  "devDependencies": {
+    "concurrently": "^5.0.2",
+    "node-dev": "^4.0.0"
+  }
+}
