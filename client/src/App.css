@@ -1,0 +1,18 @@
+
+.form-elem {
+  margin: 3px;
+}
+
+td {
+  height: 60px;
+  vertical-align: bottom;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
