@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-var {createUser, listAllUsers} =  require('../database');
+var {createUser, removeUser, grantOverallRole, listAllUsers} =  require('../database');
 // import bcrypt from 'bcrypt';
 
 const sleep = (milliseconds) => {
@@ -16,14 +16,27 @@ router.get('/list_user', (req, res) => {
     })
 })
 
-router.get('/remove_user', (req, res) => {
+router.post('/remove_user', (req, res) => {
     sleep(100).then(() => {
         let {user} = req.body;
         return removeUser(user);
     }).then(() => {
         res.json({status: 'ok'});
     }).catch((err) => {
-        res.json({status: 'error', err});
+        res.json({status: 'error', reason: err});
+    })
+})
+
+router.post('/grant_overall_role', (req, res) => {
+    sleep(100).then(() => {
+        let {user, role} = req.body;
+        return grantOverallRole(user, role);
+    }).then((result) => {
+        console.log(result, 'result');
+        res.json({status: 'ok'});
+    }).catch((err) => {
+        console.log(err);
+        res.json({status: 'error', reason: err});
     })
 })
 

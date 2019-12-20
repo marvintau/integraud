@@ -13,8 +13,8 @@ let projects = new DataStore({
 })
 projects.ensureIndex({fieldName: 'project_name', unique: true});
 
-function createUser(user_name, password, nickname){    
-    return users.insert({user_name, password, nickname})
+function createUser(user_name, password, nickname, role){    
+    return users.insert({user_name, password, nickname, role})
 }
 
 function removeUser(user_name){
@@ -29,7 +29,7 @@ function findUser(user_name){
     return users.findOne({user_name});
 }
 
-function findMatchedUser(user_name, password) {
+function userLogin(user_name, password) {
     return users.findOne({user_name, password});
 }
 
@@ -43,7 +43,9 @@ function grantOverallRole(user_name, overallRole){
     ];
 
     let role = roles.includes(overallRole) ? overallRole : 'normal';
-    projects.update({user_name}, {$set: {role}})
+    console.log(user_name, overallRole, role);
+
+    return users.update({user_name}, {$set: {role: role}})
 }
 
 function createProject(project_name) {
@@ -65,9 +67,9 @@ function removeUserProject(project_name, user_name){
 findUser('quasi-lord')
 .then((doc) => {
     if(doc === null){
-        return createUser('quasi-lord', 'all4Jesus.', '管理员')
+        return createUser('quasi-lord', 'all4Jesus.', '管理员', 'supreme')
         .then(() => {
-            grantOverallRole('supreme')
+            grantOverallRole('quasi-lord', 'supreme')
         });
     }
 })
@@ -77,7 +79,9 @@ findUser('quasi-lord')
 })
 
 module.exports = {
+    userLogin,
     createUser,
     removeUser,
-    listAllUsers
+    listAllUsers,
+    grantOverallRole
 }
