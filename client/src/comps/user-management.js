@@ -1,12 +1,12 @@
 import React, {useState, useEffect} from 'react';
 
-import {post} from './hooks/fetch';
-import {useUserList} from './hooks/user';
+import {post} from '../hooks/fetch';
+import {useUserList} from '../hooks/user';
 
 import {Input, Button, Col, Table} from 'reactstrap';
 import {Spinner} from 'reactstrap';
 
-import './App.css';
+import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function HoveredSelect({hovered, value, options, action}){
