@@ -1,54 +1,59 @@
 import {useState, useEffect} from 'react';
 import {get, post} from './fetch';
 
-export function useUsersFetch(){
-    const [userList, setUserList] = useState([]);
+export function useUserList(){
+    const [list, setList] = useState([]);
     const [status, setStatus] = useState('loading');
 
     const fetchUsers = () => {
         (async function(){
             setStatus('loading');
-            setUserList(await get('/api/list_user'));
+            setList(await get('/api/list_user'));
             setStatus('ready');
         })()
     }
 
-    useEffect(fetchUsers, []);
-
-    return [status, userList, fetchUsers];
+    return {status, list, fetchUsers};
 }
 
-export function useUserRemove({user}, fetchUsers){
-    const [errMsg, setErrMsg] = useState(undefined);
+export function useLogin(){
 
-    const removeUser = () => {
+    const [user, setUser] = useState(localStorage.getItem('user'));
+    const [role, setRole] = useState(localStorage.getItem('role'));
+    const [status, setStatus] = useState('logout');
+
+    const login = (user, pass) => {
         (async function(){
-            let {status, reason} = await get('/api/remove_user', {user});
-            if(status === 'ok'){
-                await fetchUsers();
-            } else if (status === 'error'){
-                setErrMsg(reason);
+            setStatus('logging');
+            let {result, role} = await post('/api/login', {user, pass});
+            if(result === 'ok'){
+                setStatus('logged');
+                setUser(user);
+                setRole(role);
+                localStorage.setItem('user', user);
+                localStorage.setItem('role', role);
+            } else {
+                setStatus('log_failed');
             }
-        })()
+        })();
     }
 
-    return [errMsg, removeUser];
-}
-
-export function useUserCreate({user, pass, nick}, fetchUsers){
-
-    const [errMsg, setErrMsg] = useState(undefined);
-
-    const createUser = () => {
-        (async function(){
-            let {status, reason} = await post('/api/create_user', {user, pass, nick});
-            if(status === 'ok'){
-                await fetchUsers();
-            } else if (status === 'error'){
-                setErrMsg(reason);
-            }
-        })()
+    const logout = (user) => {
+        setUser(undefined);
+        setRole(undefined);
+        localStorage.removeItem('user');
+        localStorage.removeItem('role');
+        setStatus('logout');
     }
 
-    return [errMsg, createUser];
+    const getUser = () => {
+        return {user, role};
+    }
+
+    return {
+        status,
+        login,
+        logout,
+        getUser
+    }
 }

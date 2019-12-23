@@ -1,5 +1,5 @@
 import React from 'react';
-import Manager from './manager';
+import Manager from './user-management';
 
 
 function App() {

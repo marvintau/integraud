@@ -1,15 +1,26 @@
 var express = require('express');
 var router = express.Router();
 
-var {createUser, removeUser, grantOverallRole, listAllUsers} =  require('../database');
+var {createUser, removeUser, grantOverallRole, listAllUsers, userLogin} =  require('../database');
 // import bcrypt from 'bcrypt';
+
+const DELAY = 50;
 
 const sleep = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
   }
+
+router.post('/login', (req, res) => {
+    sleep(DELAY).then(() => {
+        let {user, pass} = req.body;
+        return userLogin(user, pass);
+    }).then((result) => {
+        res.json(result);
+    })
+})
   
 router.get('/list_user', (req, res) => {
-    sleep(100).then(() => {
+    sleep(DELAY).then(() => {
         return listAllUsers();
     }).then((result) => {
         res.json(result);
@@ -17,7 +28,7 @@ router.get('/list_user', (req, res) => {
 })
 
 router.post('/remove_user', (req, res) => {
-    sleep(100).then(() => {
+    sleep(DELAY).then(() => {
         let {user} = req.body;
         return removeUser(user);
     }).then(() => {
@@ -28,7 +39,7 @@ router.post('/remove_user', (req, res) => {
 })
 
 router.post('/grant_overall_role', (req, res) => {
-    sleep(100).then(() => {
+    sleep(DELAY).then(() => {
         let {user, role} = req.body;
         return grantOverallRole(user, role);
     }).then((result) => {
@@ -44,7 +55,7 @@ router.post('/create_user', (req, res) => {
 
     console.log(req.body);
 
-    sleep(100).then(() => {
+    sleep(DELAY).then(() => {
         let {user, pass, nick} = req.body;
         return createUser(user, pass, nick);
     })
