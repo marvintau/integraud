@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import {get, post} from './fetch';
 
 export function useUserList(){
@@ -55,5 +55,27 @@ export function useLogin(){
         login,
         logout,
         getUser
+    }
+}
+
+export function useRegister(){
+
+    const [status, setStatus] = useState('logout');
+
+    const register = (user, pass, nick) => {
+        (async function(){
+            setStatus('registering');
+            let {result} = await post('/api/register', {user, pass, nick});
+            if(result === 'ok'){
+                setStatus('registered');
+            } else {
+                setStatus('register_failed');
+            }
+        })();
+    }
+
+    return {
+        status,
+        register
     }
 }

@@ -14,6 +14,21 @@ let projects = new DataStore({
 projects.ensureIndex({fieldName: 'project_name', unique: true});
 
 function createUser(user_name, password, nickname, role){    
+
+    if(user_name.match(/^[._a-zA-Z0-9]+$/) === null || user_name.length < 5){
+        throw {
+            errorType : 'invalidUsername',
+            message: 'username invalid. A valid username should be longer than 5 characters, and only contain letters(a-zA-Z), number digits (0-9), underscore (_), and dot (.)'
+        }
+    }
+
+    if(password.length < 5 || !password.match(/[a-z]+/) || !password.match(/[A-Z]+/) || !password.match(/[0-9]+/)){
+        throw {
+            errorType : 'invalidPassword',
+            message: 'password invalid. A valid username should be no less than 6 characters, and contain small/capital letter, number at the same time.'
+        }
+    }
+
     return users.insert({user_name, password, nickname, role})
 }
 
