@@ -15,7 +15,7 @@ projects.ensureIndex({fieldName: 'project_name', unique: true});
 
 function createUser(user_name, password, nickname, role){    
 
-    if(user_name.match(/^[._a-zA-Z0-9]+$/) === null || user_name.length < 5){
+    if(user_name.match(/^[.\-_a-zA-Z0-9]+$/) === null || user_name.length < 5){
         throw {
             errorType : 'invalidUsername',
             message: 'username invalid. A valid username should be longer than 5 characters, and only contain letters(a-zA-Z), number digits (0-9), underscore (_), and dot (.)'

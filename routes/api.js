@@ -15,7 +15,14 @@ router.post('/login', (req, res) => {
         let {user, pass} = req.body;
         return userLogin(user, pass);
     }).then((result) => {
-        res.json(result);
+        if(result === null){
+            res.json({result:'error', reason:'notFound'})
+        } else {
+            console.log(result);
+            res.json({result:'ok', ...result});
+        }
+    }).catch(err => {
+        res.json({result:'error', reason: err.message});
     })
 })
   
@@ -64,9 +71,7 @@ router.post('/create_user', (req, res) => {
         res.json({status: 'ok', user:user_name, nick: nickname})
     })
     .catch((err) => {
-        if(err.errorType === 'uniqueViolated'){
-            res.json({status: 'error', reason: 'EXISTS'})
-        }
+        res.json({status: 'error', reason: err.errorType})
     })
 })
 

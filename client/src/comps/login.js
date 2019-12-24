@@ -1,7 +1,8 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import {Col, FormGroup, Form, Input, Label, Button} from 'reactstrap';
-import {Spinner} from 'reactstrap';
 import {BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom';
+
+import {AuthContext} from '../hooks/auth';
 
 function useValid(validDict, msgDict){
     const [isValid, setValid] = useState(false);
@@ -48,7 +49,7 @@ function useUsername(){
     const validDict = {
         'EMPTY' : (username) => username.length === 0,
         'LESS'  : (username) => username.length < 5,
-        'CHAR'  : (username) => !username.match(/^[\._a-zA-Z0-9]+$/)
+        'CHAR'  : (username) => !username.match(/^[\.\-_a-zA-Z0-9]+$/)
     }
 
     return useValidInput('用户名', 'username', validDict, msgDict);
@@ -101,14 +102,14 @@ function useNickname(){
 
 function Register(){
 
-    const {isValid:usernameValid, element:usernameElement} = useUsername();
-    const {isValid:passwordValid, content:first, element:passwordElement} = usePassword();
-    const {isValid:passTwiceValid, element:passTwiceElement} = usePassTwice(first);
+    const {isValid:usernameValid, content:user, element:usernameElement} = useUsername();
+    const {isValid:passwordValid, content:pass, element:passwordElement} = usePassword();
+    const {isValid:passTwiceValid, element:passTwiceElement} = usePassTwice(pass);
     const {isValid:nickValid, element:nickElement} = useNickname();
 
     const button = <Button color="primary">注册</Button>;
 
-    const retButton = <Button outline onClick={() => {}} color="info">算了</Button>;
+    const retButton = <Link to='/user-management'><Button outline color="info">算了</Button></Link>;
 
     return <>
         <h2 style={{margin: '50px 0px'}} >注册</h2>
@@ -128,14 +129,20 @@ function Register(){
 
 }
 
-function Login(){
+function Login(props){
 
-    const {isValid:usernameValid, element:usernameElement} = useUsername();
-    const {isValid:passwordValid, content:first, element:passwordElement} = usePassword();
+    const {role, status, msg, login} = useContext(AuthContext);
 
-    const button = <Button color="primary">登录</Button>;
+    const {isValid:usernameValid, content:user, element:usernameElement} = useUsername();
+    const {isValid:passwordValid, content:pass, element:passwordElement} = usePassword();
 
-    const retButton = <Button outline onClick={() => {}} color="info">算了</Button>;
+    const button = <Button onClick={() => {
+        login(user, pass);
+        console.log(user, role);
+        props.history.push("/");
+    }} color="primary">登录</Button>;
+
+    const retButton = <Link to='/'><Button outline color="info">算了</Button></Link>;
 
     return <>
         <h2 style={{margin: '50px 0px'}} >登录</h2>
@@ -148,18 +155,16 @@ function Login(){
                 <Link to='/register'><Button color="warning">去注册</Button></Link>
             </FormGroup>
         </Form>
+        <div>{status} {msg}</div>
     </>
 
 }
 
 
-export default function () {
+export default function (props) {
+
     return <Col md={{size: 4, offset:4}}>
-        <Router>
-            <Switch>
-                <Route path="/login"><Login /></Route>
-                <Route path="/register"><Register /></Route>
-            </Switch>
-        </Router>
+        <Route path="/login"><Login {...props} /></Route>
+        <Route path="/register"><Register {...props} /></Route>
     </Col>
 }
