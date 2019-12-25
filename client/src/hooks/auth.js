@@ -1,7 +1,5 @@
 import React, {createContext, useState} from 'react';
-
 import {post} from './fetch';
-
 
 const AuthContext = createContext({user:undefined, role:undefined, status:undefined, login:()=>{}, logout:() =>{}});
 
@@ -12,13 +10,14 @@ const AuthProvider = ({children}) => {
     const [nick, setNick] = useState(undefined);
     const [status, setStatus] = useState('logged_out')
     const [msg, setMsg] = useState(undefined);
+    const [list, setList] = useState([]);
 
     const login = (user, pass) => {
         (async function(){
             setStatus('logging');
             let {result, role, nickname:nick, reason} = await post('/api/login', {user, pass});
             if(result === 'ok'){
-                setStatus('logged');
+                setStatus('ready');
                 setUser(user);
                 setRole(role);
                 setNick(nick);
@@ -26,17 +25,41 @@ const AuthProvider = ({children}) => {
                 setStatus('log_failed');
                 setMsg(reason);
             }
-            console.log('log', result);
+            console.log('log', result, status);
         })();
     }
     
     const logout = (user) => {
         setUser(undefined);
         setRole('visitor');
-        setStatus('logged_out');
+        setStatus('ready');
+    }
+
+    const listUsers = () => {
+        console.log(role, 'role before send');
+        (async function(){
+            setStatus('loading');
+            setList(await post('/api/list_user', {role}));
+            setStatus('ready');
+        })()
     }
     
-    return <AuthContext.Provider value={{user, role, nick, status, msg, login, logout}}>
+    const register = (user, pass, nick) => {
+        (async function(){
+            setStatus('registering');
+            let {result, reason} = await post('/api/create_user', {user, pass, nick});
+            if(result === 'ok'){
+                setStatus('ready');
+                setList(await post('/api/list_user', {role}));
+            } else {
+                setStatus('register_failed');
+                setMsg(reason)
+            }
+        })();
+        console.log(status, 'status');
+    }
+
+    return <AuthContext.Provider value={{user, role, nick, status, msg, list, login, logout, register, listUsers}}>
         {children}
     </AuthContext.Provider>
 }

@@ -10,8 +10,8 @@ export default function Home(){
   
     return <>
       <ul>
-        {['governer', 'supreme'].includes(role) ? <li style={{margin: '20px'}}><Link to="/user-management"><Button>用户控制</Button></Link></li> : undefined }
-        {/* <li style={{margin: '20px'}}><Link to="/user-management"><Button>用户控制</Button></Link></li> */}
+        {['governer', 'supreme'].includes(role) ? <li style={{margin: '20px'}}><Link to="/user-management"><Button>用户管理</Button></Link></li> : undefined }
+        {['governer', 'supreme'].includes(role) ? <li style={{margin: '20px'}}><Link to="/project-management"><Button>项目管理</Button></Link></li> : undefined }
       </ul>
     </>
   }

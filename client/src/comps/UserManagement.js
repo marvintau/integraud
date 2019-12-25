@@ -1,13 +1,16 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 
 import {post} from '../hooks/fetch';
-import {useUserList} from '../hooks/user';
 
 import {Input, Button, Col, Table} from 'reactstrap';
 import {Spinner} from 'reactstrap';
+import {ConfirmButton} from './ComfirmButton';
+
+import {AuthContext} from '../hooks/auth';
 
 import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Link } from 'react-router-dom';
 
 function HoveredSelect({hovered, value, options, action}){
 
@@ -40,32 +43,18 @@ function RoleSelect({hovered, role, action}){
     return HoveredSelect({hovered, value:role, options: roles, action});
 }
 
-function ConfirmButton({hovered, name, action}){
-    const [state, setState] = useState('ready');
-
-    return !hovered
-    ? []
-    : state === 'ready'
-    ? <Button color='warning' style={{width:'100%'}} onClick={() => setState('pending')}>{name}</Button>
-    : <div style={{width:"100%", display:'flex', justifyContent:'space-between'}}>
-        <Button color='danger' onClick={() => {
-            action()
-            setState('done')
-        }}>确定</Button>
-        <Button color='info' onClick={() => setState('ready')}>算了</Button>
-      </div>
-}
-
-function UserDisplayRow({user, nick, role, fetchUsers}){
+function UserDisplayRow({user, nick, role}){
 
     const [hovered, setHovered] = useState(false);
     const [errMsg, setErrMsg] = useState(null);
+
+    const {listUsers} = useContext(AuthContext);
 
     const changeRole = (role)=>{
         (async function(){
             let {status, reason} = await post('/api/grant_overall_role', {user, role});
             if(status === 'ok'){
-                fetchUsers();
+                listUsers();
             } else if (status === 'error'){
                 setErrMsg(reason);
             }
@@ -77,7 +66,7 @@ function UserDisplayRow({user, nick, role, fetchUsers}){
             let {status, reason} = await post('/api/remove_user', {user});
             if(status === 'ok'){
                 console.log('deleted')
-                fetchUsers();
+                listUsers();
             } else if (status === 'error'){
                 setErrMsg(reason);
             }
@@ -95,26 +84,16 @@ function UserDisplayRow({user, nick, role, fetchUsers}){
     </tr>
 }
 
-function UserCreate({fetchUsers}){
+function UserCreate(){
     const [user, setUser] = useState('');
     const [pass, setPass] = useState('');
     const [nick, setNick] = useState('');
-    const [errMsg, setErrMsg] = useState(undefined);
 
-    const createUser = () => {
-        (async function(){
-            let {status, reason} = await post('/api/create_user', {user, pass, nick});
-            if(status === 'ok'){
-                await fetchUsers();
-            } else if (status === 'error'){
-                setErrMsg(reason);
-            }
-        })()
-    }
+    const {msg, register} = useContext(AuthContext);
 
     const butt = <Button
         color='success'
-        onClick={createUser}
+        onClick={() => register(user, pass, nick)}
         style={{width: '100%'}}>
         添加新用户
     </Button>
@@ -124,29 +103,29 @@ function UserCreate({fetchUsers}){
         <th className="col-2"><Input placeholder="密码" value={pass} onChange={(e) => setPass(e.target.value)}/></th>
         <th className="col-2"><Input placeholder="昵称" value={nick} onChange={(e) => setNick(e.target.value)}/></th>
         <th className="col-2">{butt}</th>
-        <th>{errMsg ?? <span>{errMsg}</span>}</th>
+        <th>{msg ?? <span>{msg}</span>}</th>
     </tr>
 }
 
-export default function Manager(props){
+export default function (props){
 
-    let {status:fetchStatus, list:userListData, fetchUsers} = useUserList();
+    let {status:fetchStatus, list:userListData, listUsers} = useContext(AuthContext);
     
-    useEffect(fetchUsers, []);
+    useEffect(listUsers, []);
 
     let userList = [];
     for (let i = 0; i < userListData.length; i++){
         let {user_name, nickname, role} = userListData[i];
         console.log(user_name, nickname);
-        userList.push(<UserDisplayRow key={i} {...{user:user_name, nick:nickname, role, fetchUsers}}/>);
+        userList.push(<UserDisplayRow key={i} {...{user:user_name, nick:nickname, role}}/>);
     }
 
     return <Col>
         <Table><tbody>
-            <UserCreate fetchUsers={fetchUsers} />
+            <UserCreate />
             {userList}
         </tbody></Table>
         {fetchStatus !== 'ready' && userList.length === 0 ? <Spinner color="primary" size="xs"/> : undefined }
+        <Link to='/'><Button color="primary">返回</Button></Link>
     </Col>
-
 }

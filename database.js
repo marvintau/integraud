@@ -13,7 +13,7 @@ let projects = new DataStore({
 })
 projects.ensureIndex({fieldName: 'project_name', unique: true});
 
-function createUser(user_name, password, nickname, role){    
+function createUser(user_name, password, nickname){    
 
     if(user_name.match(/^[.\-_a-zA-Z0-9]+$/) === null || user_name.length < 5){
         throw {
@@ -29,15 +29,34 @@ function createUser(user_name, password, nickname, role){
         }
     }
 
-    return users.insert({user_name, password, nickname, role})
+    return users.insert({user_name, password, nickname, role:'normal'})
 }
 
 function removeUser(user_name){
     return users.remove({user_name});
 }
 
-function listAllUsers(){
-    return users.find({});
+function listUsers(role){
+
+    const roleRange = {
+        'supreme' : ['governer', 'manager', 'normal'],
+        'governer': ['manager', 'normal'],
+        'manager': ['normal'],
+        'normal' :[]
+    }[role];
+
+    console.log(role, roleRange);
+
+    return users.find({role: {$in: roleRange}});
+}
+
+function listProjects(user, role){
+
+    if(['supreme', 'governer'].includes(role)){
+        return projects.find({});
+    } else {
+        return projects.find({[`members.${user}`]: {$exists: true}})
+    }
 }
 
 function findUser(user_name){
@@ -64,19 +83,22 @@ function grantOverallRole(user_name, overallRole){
 }
 
 function createProject(project_name) {
-    projects.insert({project_name})
+    return projects.insert({project_name})
 }
 
 function removeProject(project_name){
-    projects.remvoe({project_name});
+    console.log({project_name});
+    return projects.remove({project_name}, {});
 }
 
-function assignUserProject(project_name, user_name, role) {
-    projects.update({project_name}, {$set: {[`users.${user_name}`]: role}})
+function assignProjectMember(project_name, user_name, role) {
+    console.log(user_name, 'database', 'assign project member')
+    return projects.update({project_name}, {$set: {[`members.${user_name}`]: role}})
 }
 
-function removeUserProject(project_name, user_name){
-    projects.update({project_name}, {$set: {[`users.${user_name}`]: role}})
+function removeProjectMember(project_name, user_name){
+    console.log(user_name, 'database', 'remove project member')
+    return projects.update({project_name}, {$unset: {[`members.${user_name}`]: true}});
 }
 
 findUser('quasi-lord')
@@ -97,6 +119,12 @@ module.exports = {
     userLogin,
     createUser,
     removeUser,
-    listAllUsers,
-    grantOverallRole
+    listUsers,
+    grantOverallRole,
+
+    listProjects,
+    createProject,
+    removeProject,
+    assignProjectMember,
+    removeProjectMember
 }

@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {Col, FormGroup, Form, Input, Label, Button} from 'reactstrap';
 import {Route, Link} from 'react-router-dom';
 
@@ -26,12 +26,15 @@ function useValidInput(labelName, id, validDict, msgDict){
     const [content, setContent] = useState('');
     const [isValid, msg, validInput] = useValid(validDict, msgDict);
 
+    const change = (e) =>  {
+        console.log('change');
+        setContent(e.target.value)
+        validInput(e.target.value)
+    }
+
     const element = <FormGroup className={isValid ? ' has-error' : ''}>
         <Label for={id}>{labelName}</Label>
-        <Input type="text" name={id} value={content} onChange={(e) => {
-            setContent(e.target.value)
-            validInput(e.target.value)
-        }} />
+        <Input type="text" name={id} value={content} onChange={change} onInput={(e)=>{}} />
         <div className="help-block">{msg}</div>
     </FormGroup>
 
@@ -102,12 +105,18 @@ function useNickname(){
 
 function Register(){
 
+    const {status, register} = useContext(AuthContext);
+
     const {isValid:usernameValid, content:user, element:usernameElement} = useUsername();
     const {isValid:passwordValid, content:pass, element:passwordElement} = usePassword();
     const {isValid:passTwiceValid, element:passTwiceElement} = usePassTwice(pass);
-    const {isValid:nickValid, element:nickElement} = useNickname();
+    const {isValid:nickValid, content:nick, element:nickElement} = useNickname();
 
-    const button = <Button color="primary">注册</Button>;
+    const button = <Button onClick={() => {
+        register(user, pass, nick);
+        console.log(user, status, 'afterRegister');
+        // props.history.push("/");
+    }} color="primary">注册</Button>;
 
     const retButton = <Link to='/user-management'><Button outline color="info">算了</Button></Link>;
 
@@ -119,12 +128,12 @@ function Register(){
             {passTwiceElement}
             {nickElement}
             
-            <FormGroup>
-                {(usernameValid && passwordValid && passTwiceValid && nickValid) ? button : undefined}
-                {retButton}
-                <Link to='/login'><Button color="warning">去登录</Button></Link>
-            </FormGroup>
         </Form>
+        <FormGroup>
+            {(usernameValid && passwordValid && passTwiceValid && nickValid) ? button : undefined}
+            {retButton}
+            <Link to='/login'><Button color="warning">去登录</Button></Link>
+        </FormGroup>
     </>
 
 }
@@ -133,29 +142,44 @@ function Login(props){
 
     const {role, status, msg, login} = useContext(AuthContext);
 
+    const statusExplained = {
+        'logging' : '正在登入',
+        'ready' : '已登入',
+        'log_failed': '登入失败'
+    }[status];
+
+    const msgExplained = {
+        'notFound' : '用户名和密码不匹配',
+    }[msg];
+
+    useEffect(() => {
+        if(status === 'ready'){
+            props.history.push("/");
+        }
+    })
+
     const {isValid:usernameValid, content:user, element:usernameElement} = useUsername();
     const {isValid:passwordValid, content:pass, element:passwordElement} = usePassword();
 
     const button = <Button onClick={() => {
         login(user, pass);
         console.log(user, role);
-        props.history.push("/");
     }} color="primary">登录</Button>;
 
     const retButton = <Link to='/'><Button outline color="info">算了</Button></Link>;
 
     return <>
         <h2 style={{margin: '50px 0px'}} >登录</h2>
-        <Form onSubmit={() => {}}>
+        <Form onSubmit={(e) => {e.preventDefault(); console.log('here')}}>
             {usernameElement}
             {passwordElement}
-            <FormGroup>
-                {(usernameValid && passwordValid) ? button : undefined}
-                {retButton}
-                <Link to='/register'><Button color="warning">去注册</Button></Link>
-            </FormGroup>
         </Form>
-        <div>{status} {msg}</div>
+        <FormGroup>
+            {(usernameValid && passwordValid) ? button : undefined}
+            {retButton}
+            <Link to='/register'><Button color="warning">去注册</Button></Link>
+        </FormGroup>
+        <div>{statusExplained} {msgExplained}</div>
     </>
 
 }
