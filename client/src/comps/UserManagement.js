@@ -43,10 +43,6 @@ function RoleSelect({hovered, role, action}){
 function ConfirmButton({hovered, name, action}){
     const [state, setState] = useState('ready');
 
-    const reset = () => {
-        setState('ready');
-    }
-
     return !hovered
     ? []
     : state === 'ready'
@@ -56,7 +52,7 @@ function ConfirmButton({hovered, name, action}){
             action()
             setState('done')
         }}>确定</Button>
-        <Button color='info'   onClick={() => setState('ready')}>算了</Button>
+        <Button color='info' onClick={() => setState('ready')}>算了</Button>
       </div>
 }
 

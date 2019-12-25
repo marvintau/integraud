@@ -1,6 +1,6 @@
 import React, {useState, useContext} from 'react';
 import {Col, FormGroup, Form, Input, Label, Button} from 'reactstrap';
-import {BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom';
+import {Route, Link} from 'react-router-dom';
 
 import {AuthContext} from '../hooks/auth';
 
