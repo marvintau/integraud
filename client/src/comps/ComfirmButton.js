@@ -9,10 +9,10 @@ export function ConfirmButton({hovered, name, action}){
     : state === 'ready'
     ? <Button color='warning' style={{width:'100%'}} onClick={() => setState('pending')}>{name}</Button>
     : <div style={{width:"100%", display:'flex', justifyContent:'space-between'}}>
-        <Button color='danger' onClick={() => {
+        <Button style={{width:"48%"}} color='danger' onClick={() => {
             action()
             setState('done')
         }}>确定</Button>
-        <Button color='info' onClick={() => setState('ready')}>算了</Button>
+        <Button style={{width:"48%"}} color='info' onClick={() => setState('ready')}>算了</Button>
       </div>
 }

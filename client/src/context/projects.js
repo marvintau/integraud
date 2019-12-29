@@ -1,4 +1,4 @@
-import React, {createContext, useState, useContext, useCallback} from 'react';
+import React, {createContext, useState, useContext} from 'react';
 import {post} from './fetch';
 
 import {AuthContext} from './auth';
@@ -23,7 +23,7 @@ const ProjectProvider = ({children}) => {
         console.log('list projects', user, role);
         (async function(){
             setStatus('loading');
-            setList(await post('/api/list_projects', {user, role}));
+            setList(await post('/api/project/list', {user, role}));
             setStatus('ready');
         })()
     }
@@ -32,10 +32,10 @@ const ProjectProvider = ({children}) => {
         (async function(){
             console.log('creating project', {project});
             setStatus('loading');
-            let {result, reason} = await post('api/create_project', {project});
+            let {result, reason} = await post('/api/project/create', {project});
             if(result === 'ok'){
                 setStatus('added');
-                setList(await post('/api/list_projects', {user, role}));
+                setList(await post('/api/project/list', {user, role}));
             } else {
                 setStatus('add_failed');
                 setMsg(reason);
@@ -46,11 +46,11 @@ const ProjectProvider = ({children}) => {
     const removeProject = (project) => {
         (async function(){
             setStatus('loading');
-            let {result, reason} = await post('api/remove_project', {project});
+            let {result, reason} = await post('/api/project/remove', {project});
             console.log('remove project', result);
             if(result === 'ok'){
                 setStatus('ready');
-                setList(await post('/api/list_projects', {user, role}));
+                setList(await post('/api/project/list', {user, role}));
             } else {
                 setStatus('remove_failed');
                 setMsg(reason);
@@ -62,10 +62,10 @@ const ProjectProvider = ({children}) => {
         (async function(){
             console.log('assigning member');
             setStatus('loading');
-            let {result, reason} = await post('api/assign_project_member', {project, user:selUser, role:selRole});
+            let {result, reason} = await post('/api/project/assign_member', {project, user:selUser, role:selRole});
             if(result === 'ok'){
                 setStatus('ready');
-                setList(await post('/api/list_projects', {user, role}));
+                setList(await post('/api/project/list', {user, role}));
             } else {
                 setStatus('assign_failed');
                 setMsg(reason);
@@ -76,10 +76,10 @@ const ProjectProvider = ({children}) => {
     const removeProjectMember = (project, removed) => {
         (async function(){
             setStatus('loading');
-            let {result, reason} = await post('api/remove_project_member', {project, user:removed});
+            let {result, reason} = await post('/api/project/remove_member', {project, user:removed});
             if(result === 'ok'){
                 setStatus('ready');
-                setList(await post('/api/list_projects', {user, role}));
+                setList(await post('/api/project/list', {user, role}));
             } else {
                 setStatus('remove_failed');
                 setMsg(reason);

@@ -1,0 +1,6 @@
+{"user_name":"Marvin","password":"asdasdasd,.123","nickname":"马文","role":"manager","_id":"2DEXnHEIJTt0e5dX"}
+{"user_name":"Watson","password":"asdasdasd,.123","nickname":"华生","role":"manager","_id":"Fqu96t9PWVKzffqG"}
+{"user_name":"quasi-lord","password":"all4Jesus.","nickname":"管理员","role":"supreme","_id":"MNWwGWswpLQRfeX9"}
+{"user_name":"Vaughn","password":"asdasdasd,.123","nickname":"沃恩","role":"normal","_id":"bm0Zz5GTBU6M3Oh2"}
+{"user_name":"Romero","password":"asdasdasd,.123","nickname":"罗枚","role":"normal","_id":"qGpJjZlm6pt7vn4F"}
+{"$$indexCreated":{"fieldName":"user_name","unique":true,"sparse":false}}

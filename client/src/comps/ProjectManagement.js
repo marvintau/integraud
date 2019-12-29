@@ -1,14 +1,14 @@
 import React, {useState, useEffect, useContext} from 'react';
-import Select from 'react-select';
 
 import {Input, Button, Col, Table} from 'reactstrap';
 import {Spinner} from 'reactstrap';
+import {FixedSizeList as List} from 'react-window';
+import AssignSelect from './AssignSelect';
 
 import { Link } from 'react-router-dom';
 
-
-import {AuthContext} from "../hooks/auth";
-import {ProjectContext} from '../hooks/projects';
+import {AuthContext} from "../context/auth";
+import {ProjectContext} from '../context/projects';
 
 import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -16,7 +16,7 @@ import { ConfirmButton } from './ComfirmButton';
 
 function ProjectCreate(){
     const [project, setProject] = useState('');
-    const {msg, createProject, removeProject} = useContext(ProjectContext);
+    const {msg, createProject} = useContext(ProjectContext);
 
     const butt = <Button
         color='success'
@@ -35,110 +35,77 @@ function ProjectCreate(){
     </tr>
 }
 
+function RemoveProjectButton({hovered, project}){
 
-function ProjectRow({project, members}){
+    const {role} = useContext(AuthContext);
+    const {removeProject} = useContext(ProjectContext);
+
+    if(['supreme', 'governer'].includes(role)){
+        return <ConfirmButton {...{hovered, name:'刪除项目', action:()=>removeProject(project)}} />
+    } else {
+        return <></>
+    }
+
+}
+
+function ProjectRow({index, style, data}){
+
+    const {project, members} = data[index];
 
     const [hovered, setHovered] = useState(false);
 
-    const [selMember, setSelMember] = useState(undefined);
-    const [selRole, setSelRole] = useState(undefined);
-
-    const {role, list:userList} = useContext(AuthContext);
-    const {assignProjectMember, removeProjectMember, removeProject} = useContext(ProjectContext);
-
-    const optionsList = userList.map(({user_name, nickname})=> ({label:nickname, value:user_name}));
-
-    let roleList;
-    if(['supreme', 'governer'].includes(role)){
-        roleList = [{label:'负责人', value:'manager'}, {label:'成员', value:'member'}]
-    } else {
-        roleList = [{label:'成员', value:'member'}]
-    }
-
-    let userNameDict = Object.fromEntries(optionsList.map(({label, value}) => [value, label]));
-    let memberList = Object.keys(members).map(key => ({label:userNameDict[key], value:key}));
-
-    let memberSelect = <Select
-        placeholder="选择成员"
-        value={selMember}
-        options={optionsList}
-        onChange={(value) => {
-            setSelMember(value);
-        }}
-    />
-
-    let roleSelect = <Select
-        placeholder="选择权限"
-        value={selRole}
-        isSearchable={false}
-        options={roleList}
-        onChange={(value) => {
-            setSelRole(value);
-        }}
-    />
-
-    let displaySelect = <Select isMulti isClearable={false} isOptionDisabled={true}
-        placeholder="无"
-        value={memberList}
-        isSearchable={false}
-        options={[]}
-        onChange={(newValue, {action}) => {
-            if(action==='remove-value'){
-                let removed = memberList.filter(e => !newValue.includes(e))[0]
-                removeProjectMember(project, removed.value);
-            }
-        }}
-    />
-
-    let setMember = () => {
-        console.log('assign project memebr', project, selMember, selRole);
-        assignProjectMember(project, selMember.value, selRole.value);
-    }
-
-    let assignSelect = <div>
-        <div style={{width:"98%", margin:"0px 1%"}}>{displaySelect}</div>
-        <div style={{display:'flex'}}>
-            <div style={{width:"32%", margin:"5px 1%"}}>{memberSelect}</div>
-            <div style={{width:"32%", margin:"5px 1%"}}>{roleSelect}</div>
-            <Button style={{width:"32%", margin:'5px 1%'}} color="warning" disabled={!(selMember && selRole)} onClick={setMember}>确定</Button>
-        </div>
-    </div>
-
-    let confirmedButton = <ConfirmButton {...{hovered, name:'刪除项目', action:()=>removeProject(project)}} />
-
-    return <tr className="d-flex" style={{height: '100px'}}
+    return <div style={{display:'flex', alignItems:'center', height:'100px', padding:"10px", background: index % 2 ?'#E8E8E8': "#FFFFFF", ...style}}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}>
-        <td className="col-md-3">{project}</td>
-        <td className="col-md-2">{confirmedButton}</td>
-        <td className="col-md-4">{assignSelect}</td>
-    </tr>
+        <div className="col-3">{project}</div>
+        <div className="col-2"><RemoveProjectButton  {...{hovered, project}} /></div>
+        <div className="col-4"><AssignSelect {...{project, members}} /></div>
+    </div>
 }
 
 export default function (props){
 
-    const {user, role, listUsers} = useContext(AuthContext);
-    const {status, list:projectListData, listProjects} = useContext(ProjectContext);
-
-    console.log(projectListData);
+    const {status:authStatus, user, role, listUsers} = useContext(AuthContext);
+    const {status:projStatus, list:projectListData, listProjects} = useContext(ProjectContext);
 
     useEffect(() => {
-        listProjects(user, role);
-        listUsers();
+        (async function(){
+            try{
+                await listProjects(user, role);
+                await listUsers();
+            } catch (err){
+                console.log(err);
+            }
+        })()
     }, []);
 
-    let projectList = [];
-    for (let i = 0; i < projectListData.length; i++){
-        let {project_name:project, members={}} = projectListData[i];
-        projectList.push(<ProjectRow key={i} {...{project, members}} />);
+    const projectCreate = ['supreme', 'governer'].includes(role)
+        ? <Table><tbody> <ProjectCreate /> </tbody></Table>
+        : undefined;
+
+    let projectListElem;
+    if(projStatus !== 'ready' || authStatus !== 'ready'){
+        projectListElem = <Spinner color="primary" size="xs" style={{margin:'10px'}} />;
+    } else {
+
+        let projectList = projectListData.map(({project_name, members={}}) => ({project:project_name, members}));
+
+        projectListElem = <List
+            style= {{borderTop: '1px solid black', borderBottom:'1px solid black', margin:'0px 10px'}}
+            height={580}
+            itemCount={projectList.length}
+            itemData={projectList}
+            itemSize={100}
+            itemKey={(index, data) => data[index].project_name}
+            width={'90%'}
+        >
+            {ProjectRow}
+        </List>
     }
-    
+
     return <Col>
-        <Table><tbody>
-            <ProjectCreate />
-            {projectList}
-        </tbody></Table>
-        <div>{status !== 'ready' && projectList.length !== 0 ? <Spinner color="primary" size="xs" style={{margin:'10px'}} /> : undefined }</div>
-        <Link to='/'><Button color="primary">返回</Button></Link>
+        {projectCreate}
+        {projectListElem}
+        <Link to='/'><Button color="primary" style={{margin: '10px'}}>返回</Button></Link>
     </Col>
 }

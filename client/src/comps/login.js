@@ -2,7 +2,7 @@ import React, {useState, useContext, useEffect} from 'react';
 import {Col, FormGroup, Form, Input, Label, Button} from 'reactstrap';
 import {Route, Link} from 'react-router-dom';
 
-import {AuthContext} from '../hooks/auth';
+import {AuthContext} from '../context/auth';
 
 function useValid(validDict, msgDict){
     const [isValid, setValid] = useState(false);
@@ -46,7 +46,7 @@ function useUsername(){
     const msgDict = {
         'EMPTY' : '用户名为必填项',
         'LESS'  : '用户名应多于5个字母',
-        'CHAR'  : '用户名应为大小写英文字母、数字及“.”、“_”符号的组合'
+        'CHAR'  : '用户名应为大小写英文字母、数字及[".", "_"]符号的组合'
     }
 
     const validDict = {
@@ -64,13 +64,13 @@ function usePassword(){
     const msgDict = {
         'EMPTY' : '密码为必填项',
         'LESS'  : '密码应不少于8个字符',
-        'CHAR'  : '密码应为大小写英文字母、数字及“.”、“_”符号的组合'
+        'CHAR'  : '密码应包含至少一个英文字母，一个数字，及一个特殊符号[@, $, !, %, *, #, ?, &, .]'
     }
 
     const validDict = {
         'EMPTY' : (password) => password.length === 0,
         'LESS'  : (password) => password.length < 8,
-        'CHAR'  : (password) => password.match(/^[A-Za-z\d@$!%*#?&]+$/)
+        'CHAR'  : (password) => !password.match(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&,.])[A-Za-z\d@$!%*#?&,.]{1,}$/)
     }
     
     return useValidInput('密码', 'password', validDict, msgDict);
@@ -179,14 +179,13 @@ function Login(props){
             {retButton}
             <Link to='/register'><Button color="warning">去注册</Button></Link>
         </FormGroup>
-        <div>{statusExplained} {msgExplained}</div>
+        <div>{statusExplained} {msgExplained ? msgExplained : msg}</div>
     </>
 
 }
 
 
 export default function (props) {
-
     return <Col md={{size: 4, offset:4}}>
         <Route path="/login"><Login {...props} /></Route>
         <Route path="/register"><Register {...props} /></Route>

@@ -15,7 +15,7 @@ const AuthProvider = ({children}) => {
     const login = (user, pass) => {
         (async function(){
             setStatus('logging');
-            let {result, role, nickname:nick, reason} = await post('/api/login', {user, pass});
+            let {result, role, nickname:nick, reason} = await post('/api/user/login', {user, pass});
             if(result === 'ok'){
                 setStatus('ready');
                 setUser(user);
@@ -29,17 +29,17 @@ const AuthProvider = ({children}) => {
         })();
     }
     
-    const logout = (user) => {
+    const logout = () => {
         setUser(undefined);
         setRole('visitor');
         setStatus('ready');
     }
 
     const listUsers = () => {
-        console.log(role, 'role before send');
+        console.log('update list with ', user, role);
         (async function(){
             setStatus('loading');
-            setList(await post('/api/list_user', {role}));
+            setList(await post('/api/user/list', {user, role}));
             setStatus('ready');
         })()
     }
@@ -47,10 +47,10 @@ const AuthProvider = ({children}) => {
     const register = (user, pass, nick) => {
         (async function(){
             setStatus('registering');
-            let {result, reason} = await post('/api/create_user', {user, pass, nick});
+            let {result, reason} = await post('/api/user/create', {user, pass, nick});
             if(result === 'ok'){
                 setStatus('ready');
-                setList(await post('/api/list_user', {role}));
+                setList(await post('/api/user/list', {role}));
             } else {
                 setStatus('register_failed');
                 setMsg(reason)
@@ -59,7 +59,36 @@ const AuthProvider = ({children}) => {
         console.log(status, 'status');
     }
 
-    return <AuthContext.Provider value={{user, role, nick, status, msg, list, login, logout, register, listUsers}}>
+    const changeRole = (user, role)=>{
+        (async function(){
+            console.log('changing', user, role);
+            let {result, reason} = await post('/api/user/grant_role', {user, role});
+            if(result === 'ok'){
+                console.log('role changed')
+                listUsers();
+            } else if (result === 'error'){
+                setMsg(reason);
+            }
+        })()
+    }
+
+    const remove = (user)=>{
+        (async function(){
+            let {result, reason} = await post('/api/user/remove', {user});
+            console.log(result, user, 'remove');
+            if(result === 'ok'){
+                console.log('deleted')
+                listUsers();
+            } else if (result === 'error'){
+                setMsg(reason);
+            }
+        })()
+    }
+
+    return <AuthContext.Provider value={{
+            user, role, nick, status, msg, list,
+            login, logout, register, listUsers, changeRole, remove
+        }}>
         {children}
     </AuthContext.Provider>
 }

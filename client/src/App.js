@@ -1,7 +1,7 @@
 import React, { useEffect} from 'react';
-import {BrowserRouter as Router, Switch} from 'react-router-dom';
+import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 
-import RoleBasedRoute from './hooks/role-based-route';
+import RoleBasedRoute from './comps/RoleBasedRoute';
 import Login from './comps/Login';
 import Logout from './comps/Logout'
 import Home from './comps/Home';
@@ -9,8 +9,8 @@ import Navbar from './comps/Navbar';
 import UserManagement from './comps/UserManagement';
 import ProjectManagement from './comps/ProjectManagement';
 
-import {AuthProvider} from './hooks/auth';
-import { ProjectProvider } from './hooks/projects';
+import {AuthProvider} from './context/auth';
+import {ProjectProvider} from './context/projects';
 
 function App() {
 
@@ -34,12 +34,12 @@ function App() {
         <Router>
           <Navbar />
           <Switch>
-            <RoleBasedRoute exact path="/" component={Home}/>
+            <Route exact path="/" component={Home}/>
             <RoleBasedRoute path="/logout" component={Logout}/>
             <RoleBasedRoute path="/login" component={Login}/>
             <RoleBasedRoute path="/register" component={Login}/>
             <RoleBasedRoute path="/user-management" component={UserManagement} roles={['supreme', 'governer']}/>
-            <RoleBasedRoute path="/project-management" component={ProjectManagement} roles={['supreme', 'governer']}/>
+            <RoleBasedRoute path="/project-management" component={ProjectManagement} roles={['supreme', 'governer', 'manager', 'normal']}/>
           </Switch>
         </Router>
       </ProjectProvider>

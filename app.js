@@ -4,10 +4,6 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var apiRouter = require('./routes/api');
-
 var app = express();
 
 // view engine setup
@@ -26,9 +22,9 @@ if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.resolve(__dirname, "client/build")));
 }
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/api', apiRouter);
+app.use('/api/project', require('./api/project'));
+app.use('/api/user', require('./api/user'));
+app.use('/api/confirmation', require('./api/confirmation'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
