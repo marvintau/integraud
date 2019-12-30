@@ -9,9 +9,11 @@ import Navbar from './comps/Navbar';
 import UserManagement from './comps/UserManagement';
 import ProjectManagement from './comps/ProjectManagement';
 import ProjectPage from './comps/ProjectPage';
+import ConfirmationManagement from './comps/ConfirmationManagement';
 
 import {AuthProvider} from './context/auth';
 import {ProjectProvider} from './context/projects';
+import {SelectedProjectProvider} from './context/selectedProject';
 
 function App() {
 
@@ -42,6 +44,7 @@ function App() {
             <RoleBasedRoute path="/user-management" component={UserManagement} roles={['supreme', 'governer']}/>
             <RoleBasedRoute path="/project-management" component={ProjectManagement} roles={['supreme', 'governer', 'manager', 'normal']}/>
             <RoleBasedRoute path="/project/:projectName" component={ProjectPage} roles={['supreme', 'governer', 'manager', 'normal']}/>
+            <RoleBasedRoute path="/confirmations/:projectName" component={ConfirmationManagement} roles={['supreme', 'governer', 'manager', 'normal']}/>
           </Switch>
         </Router>
       </ProjectProvider>

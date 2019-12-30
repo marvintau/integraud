@@ -6,7 +6,8 @@ const ConfirmationContext = createContext({
   list:[],
   create:() => {},
   remove:() => {},
-  modify:() => {}
+  modify:() => {},
+  listConfirmations: () => {}
 })
 
 const ConfirmationProvider = ({children}) => {
@@ -56,7 +57,7 @@ const ConfirmationProvider = ({children}) => {
     })();
   }
 
-  const list = (project) => {
+  const listConfirmations = (project) => {
     (async function(){
       setStatus('modify');
       let {result, reason} = await post('/api/confirmation/list', {project});
@@ -71,7 +72,7 @@ const ConfirmationProvider = ({children}) => {
     })();
   }
 
-  return <ConfirmationContext.Provider value={{status, msg, list, create, modify, remove}}>
+  return <ConfirmationContext.Provider value={{status, msg, list, create, modify, remove, listConfirmations}}>
     {children}
   </ConfirmationContext.Provider>
 }
