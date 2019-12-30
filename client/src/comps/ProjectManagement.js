@@ -35,6 +35,11 @@ function ProjectCreate(){
     </tr>
 }
 
+function EnterProjectButton({project}){
+
+    return <Link to={`/project/${project}`}><Button color="dark" style={{width: '98%'}} outline>{project}</Button></Link>
+}
+
 function RemoveProjectButton({hovered, project}){
 
     const {role} = useContext(AuthContext);
@@ -57,9 +62,9 @@ function ProjectRow({index, style, data}){
     return <div style={{display:'flex', alignItems:'center', height:'100px', padding:"10px", background: index % 2 ?'#E8E8E8': "#FFFFFF", ...style}}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}>
-        <div className="col-3">{project}</div>
+        <div className="col-4"><EnterProjectButton {...{project}} /></div>
         <div className="col-2"><RemoveProjectButton  {...{hovered, project}} /></div>
-        <div className="col-4"><AssignSelect {...{project, members}} /></div>
+        <div className="col-6"><AssignSelect {...{project, members}} /></div>
     </div>
 }
 
@@ -80,7 +85,7 @@ export default function (props){
     }, []);
 
     const projectCreate = ['supreme', 'governer'].includes(role)
-        ? <Table><tbody> <ProjectCreate /> </tbody></Table>
+        ? <Table><tbody><ProjectCreate /></tbody></Table>
         : undefined;
 
     let projectListElem;
@@ -96,8 +101,8 @@ export default function (props){
             itemCount={projectList.length}
             itemData={projectList}
             itemSize={100}
-            itemKey={(index, data) => data[index].project_name}
-            width={'90%'}
+            itemKey={(index, data) => data[index].project}
+            width={'60%'}
         >
             {ProjectRow}
         </List>

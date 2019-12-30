@@ -15,8 +15,10 @@ export default function ({project, members}){
   const [selectedMember, memberSelect] = useMemberSelect();
   const [selectedRole, roleSelect] = useRoleSelect();
 
-  const {role, list:userList} = useContext(AuthContext);
+  const {user, role, list:userList} = useContext(AuthContext);
   const {assignProjectMember} = useContext(ProjectContext);
+
+  let visibleOnly = members[user] && members[user] === 'member';
 
   const optionsList = userList
   .map(({user_name, nickname, role})=> ({label:nickname, value:user_name, role}));
@@ -27,22 +29,32 @@ export default function ({project, members}){
       roleProj:val,
       label:userNameDict[key].label,
       role:userNameDict[key].role,
-      isFixed: val==='manager' && !['supreme', 'governer'].includes(role)
+      isFixed: visibleOnly || val==='manager' && !['supreme', 'governer'].includes(role)
   }));
 
-  let setMember = () => {
-    assignProjectMember(project, selectedMember.value, selectedRole.value);
+  if (visibleOnly){
+    return <div style={{width:'100%'}}>
+      <div style={{width:"98%", margin:"0px 1%"}}>
+        <DisplayedList {...{project, memberList}} />
+      </div>
+    </div>
+  } else {
+
+    let setMember = () => {
+      assignProjectMember(project, selectedMember.value, selectedRole.value);
+    }
+  
+    return <div style={{width:'100%'}}>
+      <div style={{width:"98%", margin:"0px 1%"}}>
+        <DisplayedList {...{project, memberList, disabled:visibleOnly}} />
+      </div>
+      {!visibleOnly ? <div style={{display:'flex'}}>
+          <div style={buttonStyle}>{memberSelect}</div>
+          <div style={buttonStyle}>{roleSelect}</div>
+          <Button style={buttonStyle} color="warning" disabled={!(selectedMember && selectedRole)} onClick={setMember}>确定</Button>
+      </div> : undefined
+      }
+    </div>
+  
   }
-
-  return <div>
-    <div style={{width:"98%", margin:"0px 1%"}}>
-      <DisplayedList {...{memberList}} />
-    </div>
-    <div style={{display:'flex'}}>
-        <div style={buttonStyle}>{memberSelect}</div>
-        <div style={buttonStyle}>{roleSelect}</div>
-        <Button style={buttonStyle} color="warning" disabled={!(selectedMember && selectedRole)} onClick={setMember}>确定</Button>
-    </div>
-  </div>
-
 }

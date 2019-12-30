@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import Select from 'react-select';
+import Select, {components} from 'react-select';
 
 import {ProjectContext} from '../../context/projects';
 
@@ -47,6 +47,7 @@ export default function DisplayedList ({project, memberList}){
   }
 
   return <Select isMulti
+    components={{Menu:() => <></>, IndicatorsContainer:()=><></>}}
     isClearable={false}
     isOptionDisabled={true}
     isSearchable={false}

@@ -35,11 +35,11 @@ const ProjectProvider = ({children}) => {
             let {result, reason} = await post('/api/project/create', {project});
             if(result === 'ok'){
                 setStatus('added');
-                setList(await post('/api/project/list', {user, role}));
             } else {
                 setStatus('add_failed');
                 setMsg(reason);
             }
+            setList(await post('/api/project/list', {user, role}));
         })()
     }
 
@@ -50,11 +50,11 @@ const ProjectProvider = ({children}) => {
             console.log('remove project', result);
             if(result === 'ok'){
                 setStatus('ready');
-                setList(await post('/api/project/list', {user, role}));
             } else {
                 setStatus('remove_failed');
                 setMsg(reason);
             }
+            setList(await post('/api/project/list', {user, role}));
         })()
     }
 
@@ -65,11 +65,11 @@ const ProjectProvider = ({children}) => {
             let {result, reason} = await post('/api/project/assign_member', {project, user:selUser, role:selRole});
             if(result === 'ok'){
                 setStatus('ready');
-                setList(await post('/api/project/list', {user, role}));
             } else {
                 setStatus('assign_failed');
                 setMsg(reason);
             }
+            setList(await post('/api/project/list', {user, role}));
         })()
     }
 
@@ -77,13 +77,14 @@ const ProjectProvider = ({children}) => {
         (async function(){
             setStatus('loading');
             let {result, reason} = await post('/api/project/remove_member', {project, user:removed});
+            console.log(result, reason, 'remove member');
             if(result === 'ok'){
                 setStatus('ready');
-                setList(await post('/api/project/list', {user, role}));
             } else {
                 setStatus('remove_failed');
                 setMsg(reason);
             }
+            setList(await post('/api/project/list', {user, role}));
         })()
     }
 

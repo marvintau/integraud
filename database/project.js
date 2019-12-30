@@ -32,7 +32,7 @@ function assignMember(project_name, user_name, role) {
 }
 
 function removeMember(project_name, user_name){
-    console.log(user_name, 'database', 'remove project member')
+    console.log(project_name, user_name, 'database', 'remove project member')
     return projects.update({project_name}, {$unset: {[`members.${user_name}`]: true}});
 }
 

@@ -53,9 +53,9 @@ function list(user_name, role){
 
   const roleRange = {
     'supreme' : ['governer', 'manager', 'normal'],
-    'governer': ['manager', 'normal'],
-    'manager': ['normal'],
-    'normal' :[]
+    'governer': ['governer', 'manager', 'normal'],
+    'manager': ['manager', 'normal'],
+    'normal' :['manager', 'normal']
   }[role];
 
   console.log(user_name, role, roleRange);

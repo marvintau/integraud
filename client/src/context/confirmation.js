@@ -1,6 +1,5 @@
-import React, {createContext, useState, useEffect, useContext} from 'react';
+import React, {createContext, useState} from 'react';
 
-import {ProjectContext} from './projects';
 import {post} from './fetch';
 
 const ConfirmationContext = createContext({
@@ -14,7 +13,6 @@ const ConfirmationProvider = ({children}) => {
   const [status, setStatus] = useState('logged_out')
   const [msg, setMsg] = useState(undefined);
   const [list, setList] = useState([]);
-  const {project} = useContext(ProjectContext);
 
   const create = (confirmID) => {
     (async function(){

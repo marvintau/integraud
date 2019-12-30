@@ -8,6 +8,7 @@ import Home from './comps/Home';
 import Navbar from './comps/Navbar';
 import UserManagement from './comps/UserManagement';
 import ProjectManagement from './comps/ProjectManagement';
+import ProjectPage from './comps/ProjectPage';
 
 import {AuthProvider} from './context/auth';
 import {ProjectProvider} from './context/projects';
@@ -40,6 +41,7 @@ function App() {
             <RoleBasedRoute path="/register" component={Login}/>
             <RoleBasedRoute path="/user-management" component={UserManagement} roles={['supreme', 'governer']}/>
             <RoleBasedRoute path="/project-management" component={ProjectManagement} roles={['supreme', 'governer', 'manager', 'normal']}/>
+            <RoleBasedRoute path="/project/:projectName" component={ProjectPage} roles={['supreme', 'governer', 'manager', 'normal']}/>
           </Switch>
         </Router>
       </ProjectProvider>

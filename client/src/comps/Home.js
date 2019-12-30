@@ -10,7 +10,7 @@ export default function Home(){
   
   let userManage, projectList;
 
-  if(['governer', 'supreme', 'manager'].includes(role)){
+  if(['governer', 'supreme', 'manager', 'normal'].includes(role)){
     projectList = <Link to="/project-management">
       <Button className="col-md-4" style={{margin: '10px'}} color="info">项目列表</Button>
     </Link>

@@ -77,6 +77,9 @@ router.post('/remove_member', (req, res) => {
         return removeMember(project, user);
     })
     .then((doc) => {
+        if (doc === 0){
+            return res.json({result:'error', reason: 'notFound'});
+        }
         res.json({result: 'ok'})
     })
     .catch((err) => {
