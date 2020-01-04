@@ -14,6 +14,7 @@ import ConfirmationManagement from './comps/ConfirmationManagement';
 import {AuthProvider} from './context/auth';
 import {ProjectProvider} from './context/projects';
 import {SelectedProjectProvider} from './context/selectedProject';
+import {ConfirmationProvider} from './context/confirmation';
 
 function App() {
 
@@ -34,19 +35,23 @@ function App() {
   return <div className="App">
     <AuthProvider>
       <ProjectProvider>
-        <Router>
-          <Navbar />
-          <Switch>
-            <Route exact path="/" component={Home}/>
-            <RoleBasedRoute path="/logout" component={Logout}/>
-            <RoleBasedRoute path="/login" component={Login}/>
-            <RoleBasedRoute path="/register" component={Login}/>
-            <RoleBasedRoute path="/user-management" component={UserManagement} roles={['supreme', 'governer']}/>
-            <RoleBasedRoute path="/project-management" component={ProjectManagement} roles={['supreme', 'governer', 'manager', 'normal']}/>
-            <RoleBasedRoute path="/project/:projectName" component={ProjectPage} roles={['supreme', 'governer', 'manager', 'normal']}/>
-            <RoleBasedRoute path="/confirmations/:projectName" component={ConfirmationManagement} roles={['supreme', 'governer', 'manager', 'normal']}/>
-          </Switch>
-        </Router>
+        <SelectedProjectProvider>
+          <ConfirmationProvider>
+          <Router>
+            <Navbar />
+            <Switch>
+              <Route exact path="/" component={Home}/>
+              <RoleBasedRoute path="/logout" component={Logout}/>
+              <RoleBasedRoute path="/login" component={Login}/>
+              <RoleBasedRoute path="/register" component={Login}/>
+              <RoleBasedRoute path="/user-management" component={UserManagement} roles={['supreme', 'governer']}/>
+              <RoleBasedRoute path="/project-management" component={ProjectManagement} roles={['supreme', 'governer', 'manager', 'normal']}/>
+              <RoleBasedRoute path="/project" component={ProjectPage} roles={['supreme', 'governer', 'manager', 'normal']}/>
+              <RoleBasedRoute path="/confirmation-management" component={ConfirmationManagement} roles={['supreme', 'governer', 'manager', 'normal']}/>
+            </Switch>
+          </Router>
+          </ConfirmationProvider>
+        </SelectedProjectProvider>
       </ProjectProvider>
     </AuthProvider>
   </div>

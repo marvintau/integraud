@@ -12,17 +12,17 @@ export default function Home(){
 
   if(['governer', 'supreme', 'manager', 'normal'].includes(role)){
     projectList = <Link to="/project-management">
-      <Button className="col-md-4" style={{margin: '10px'}} color="info">项目列表</Button>
+      <Button className="col-md-3" outline style={{margin: '10px'}} color="info">项目列表</Button>
     </Link>
   }
 
   if(['governer', 'supreme'].includes(role)){
     userManage = <Link to="/user-management">
-      <Button className="col-md-4" style={{margin: '10px'}} color="primary">用户管理</Button>
+      <Button className="col-md-3" outline style={{margin: '10px'}} color="primary">用户管理</Button>
     </Link>
   }
 
-  return <Col size="md-12">
+  return <Col size="md-12" style={{display:'flex', flexDirection:'column'}}>
       {userManage}
       {projectList}
   </Col>

@@ -5,10 +5,11 @@ import {Spinner} from 'reactstrap';
 import {FixedSizeList as List} from 'react-window';
 import AssignSelect from './AssignSelect';
 
-import { Link } from 'react-router-dom';
+import {Link, useHistory } from 'react-router-dom';
 
 import {AuthContext} from "../context/auth";
 import {ProjectContext} from '../context/projects';
+import {SelectedProjectContext} from '../context/selectedProject';
 
 import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -37,7 +38,15 @@ function ProjectCreate(){
 
 function EnterProjectButton({project}){
 
-    return <Link to={`/project/${project}`}><Button color="dark" style={{width: '98%'}} outline>{project}</Button></Link>
+    const {setProject} = useContext(SelectedProjectContext);
+    const history = useHistory();
+
+    const handleLinkProject = () => {
+        setProject(project);
+        history.push(`/project`)
+    }
+    
+    return <Button color="dark" style={{width: '98%'}} outline onClick={handleLinkProject}>{project}</Button>
 }
 
 function RemoveProjectButton({hovered, project}){
@@ -61,7 +70,8 @@ function ProjectRow({index, style, data}){
 
     return <div style={{display:'flex', alignItems:'center', height:'100px', padding:"10px", background: index % 2 ?'#E8E8E8': "#FFFFFF", ...style}}
             onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}>
+            onMouseLeave={() => setHovered(false)}
+    >
         <div className="col-4"><EnterProjectButton {...{project}} /></div>
         <div className="col-2"><RemoveProjectButton  {...{hovered, project}} /></div>
         <div className="col-6"><AssignSelect {...{project, members}} /></div>
@@ -102,7 +112,7 @@ export default function (props){
             itemData={projectList}
             itemSize={100}
             itemKey={(index, data) => data[index].project}
-            width={'60%'}
+            width={'100%'}
         >
             {ProjectRow}
         </List>

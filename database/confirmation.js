@@ -5,7 +5,7 @@ let confirmations = new DataStore({
     filename: path.resolve(__dirname, './confirmation.db'),
     autoload: true
 })
-confirmations.ensureIndex({fieldName: 'project_name', unique: true});
+confirmations.ensureIndex({fieldName: 'confirm_id', unique: true});
 
 function create(confirm_id, project_name) {
     return confirmations.insert({confirm_id, project_name});
@@ -13,6 +13,37 @@ function create(confirm_id, project_name) {
 
 function remove(confirm_id){
     return confirmations.remove({confirm_id}, {});
+}
+
+function removeProject(project_name){
+  return confirmations.remove({project_name}, {multi:true});
+}
+
+function recToDoc(record, project_name){
+  let doc = {project_name};
+  doc.confirm_status = {};
+  doc.confirm_id = record.ID;
+  doc.confirmee_info = {
+    name: record.CompanyName,
+    address: record.CompanyAddress,
+    contact: record.CompanyContactName,
+    phone: record.CompanyContactPhone
+  }
+  let {Subject, Amount, Reason} = record;
+  console.log(record, {Subject, Amount, Reason});
+  doc.confirmed_amount = {
+    subject: Subject,
+    amount: Amount,
+    reason: Reason
+  }
+  return doc;
+}
+
+function insertProject(arr, project_name){
+  
+  let docArr = arr.map((e) => recToDoc(e, project_name));
+
+  return confirmations.insert(docArr);
 }
 
 /**
@@ -64,6 +95,8 @@ function list(project_name){
 module.exports = {
   create,
   remove,
+  removeProject,
+  insertProject,
   modify,
   list
 }

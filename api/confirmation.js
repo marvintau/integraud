@@ -1,7 +1,13 @@
 var express = require('express');
+var promisify = require('util').promisify;
+var multer = require('multer');
+var upload = multer().single('confirmation_list');
+var xlsx = require('xlsx');
+
+
 var router = express.Router();
 
-var {list, create, remove, modify} =  require('../database/confirmation');
+var {list, create, remove, removeProject, insertProject, modify} =  require('../database/confirmation');
 // import bcrypt from 'bcrypt';
 
 const DELAY = 50;
@@ -10,22 +16,49 @@ const sleep = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
 
+router.post('/upload', upload, (req, res) => {
+
+  const {project} = req.body;
+  const {buffer} = req.file;
+
+  console.log(req, req.body.project, project, 'project_name');
+
+  const table = xlsx.read(buffer, {type:'buffer'});
+  const firstSheet = table.Sheets[table.SheetNames[0]];
+  
+  const entries = xlsx.utils.sheet_to_json(firstSheet);
+
+  (async function(){
+    try{
+      await removeProject(project);
+      await insertProject(entries, project);
+      res.json({result:'ok'})
+    } catch (err) {
+      console.log(err);
+      res.json({result:'error', reason:err.errorType})
+    }
+  })()
+})
+
 router.post('/list', (req, res) => {
 
-  let {user:currUser, role:currRole} = req.body;
-  console.log(currUser, currRole, 'role in request body')
+  let {project} = req.body;
+  console.log('listinbg confirmation');
   sleep(DELAY).then(() => {
-    return list(currUser, currRole);
+    return list(project);
   }).then((result) => {
-    console.log
-    res.json(result);
+    // console.log(result)
+    res.json({result});
+  }).catch((error) => {
+    console.log(error);
+    res.json({result:'error', reason:error});
   })
 })
 
 router.post('/remove', (req, res) => {
   sleep(DELAY).then(() => {
-    let {confirmID} = req.body;
-    return remove(confirmID)
+    let {confirm_id} = req.body;
+    return remove(confirm_id)
   }).then((result) => {
     console.log(result);
     res.json({result: 'ok'});
@@ -37,11 +70,11 @@ router.post('/remove', (req, res) => {
 
 router.post('/create', (req, res) => {
   sleep(DELAY).then(() => {
-    let {confirmID} = req.body;
-    return create(confirmID, project);
+    let {confirm_id, project} = req.body;
+    return create(confirm_id, project);
   })
   .then((doc) => {
-    console.log(doc);
+    console.log(doc, 'created');
     let {project_name:project} = doc;
     res.json({result: 'ok', project})
   })
@@ -54,11 +87,12 @@ router.post('/create', (req, res) => {
 router.post('/modify', (req, res) => {
 
     sleep(DELAY).then(() => {
-        let {confirmID, field, value} = req.body;
-        return modify(confirmID, field, value);
+        let {confirm_id, field, value} = req.body;
+        return modify(confirm_id, field, value);
     })
     .then((doc) => {
-        res.json({result: 'ok'})
+      console.log('modified', doc);
+      res.json({result: 'ok'})
     })
     .catch((err) => {
         console.log(err);

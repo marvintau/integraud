@@ -1,11 +1,33 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {Col, Button, Row} from 'reactstrap';
-import {Link} from 'react-router-dom';
+import {useHistory} from 'react-router-dom';
 
-export default function ({match}) {
+import {SelectedProjectContext} from '../context/selectedProject';
 
-  return <Col size="md-12">
-    <Row><h2 style={{margin: '20px'}}>{match.params.projectName}</h2></Row>
-    <Link to={`/confirmations/${match.params.projectName}`}><Button className="col-md-4" style={{margin: '10px'}} color="primary">函证控制</Button></Link>
-  </Col>
+export default function () {
+
+  const {project} = useContext(SelectedProjectContext);
+  const history = useHistory();
+
+  console.log(project, 'should have been defined');
+
+  const handleLinkConfirmation = (e) => {
+    history.push(`/confirmation-management`)
+  }
+
+  const handleAlert = (e) => {
+    alert('功能正在实现中，再去催催程序员');
+  }
+
+  const style = {
+    marginTop:'20px'
+  }
+
+  return <div className='col-md-12' style={{display:'flex', flexDirection:'column'}}>
+    <Row><h2 style={{margin: '20px'}}>{project}</h2></Row>
+    <Button outline onClick={handleAlert} className="col-md-3" style={style} color="dark">基本信息 (开发中)</Button>
+    <Button outline onClick={handleLinkConfirmation} className="col-md-3" style={style} color="info">函证控制</Button>
+    <Button outline onClick={handleAlert} className="col-md-3" style={style} color="warning"   >报表管理 (开发中)</Button>
+    <Button outline onClick={handleAlert} className="col-md-3" style={style} color="primary">底稿管理 (开发中)</Button>
+  </div>
 }

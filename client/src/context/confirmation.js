@@ -1,9 +1,10 @@
 import React, {createContext, useState} from 'react';
 
-import {post} from './fetch';
+import {post, postForm} from './fetch';
 
 const ConfirmationContext = createContext({
   list:[],
+  upload:() => {},
   create:() => {},
   remove:() => {},
   modify:() => {},
@@ -15,45 +16,58 @@ const ConfirmationProvider = ({children}) => {
   const [msg, setMsg] = useState(undefined);
   const [list, setList] = useState([]);
 
-  const create = (confirmID) => {
+  const upload = (file, project) => {
+
+    (async function(){
+
+      let formData = new FormData();
+      formData.append('project', project);
+      formData.append('confirmation_list', file);
+
+      setStatus('upload');
+      let {result, reason} = await postForm('/api/confirmation/upload', formData);
+      if(result === 'ok'){
+        setMsg(reason);
+      }
+      setStatus('ready');
+      console.log('upload', result, status, reason);
+    })();
+  }
+
+  const create = (confirm_id, project) => {
     (async function(){
       setStatus('create');
-      let {result, reason} = await post('/api/confirmation/create', {confirmID});
-      if(result === 'ok'){
-          setStatus('ready');
-      } else {
-          setStatus('create_failed');
-          setMsg(reason);
+      let {result, reason} = await post('/api/confirmation/create', {confirm_id, project});
+      if(result != 'ok'){
+        setMsg(reason);
       }
-      console.log('log', result, status);
+      setStatus('ready');
+      console.log('create', result, status, reason);
     })();
   }
 
-  const modify = (confirmID, field, value) => {
+  const modify = (project, confirm_id, field, value) => {
+    console.log('modify', project);
     (async function(){
       setStatus('modify');
-      let {result, reason} = await post('/api/confirmation/create', {confirmID, field, value});
+      let {result, reason} = await post('/api/confirmation/modify', {confirm_id, field, value});
       if(result === 'ok'){
-        setStatus('ready');
-      } else {
-          setStatus('modify_failed');
-          setMsg(reason);
+        setMsg(reason);
       }
-      console.log('log', result, status);
+      setStatus('ready');
+      console.log('modify', result, status, reason);
     })();
   }
 
-  const remove = (confirmID) => {
+  const remove = (confirm_id) => {
     (async function(){
       setStatus('modify');
-      let {result, reason} = await post('/api/confirmation/remove', {confirmID});
+      let {result, reason} = await post('/api/confirmation/remove', {confirm_id});
       if(result === 'ok'){
-        setStatus('ready');
-      } else {
-          setStatus('modify_failed');
-          setMsg(reason);
+        setMsg(reason);
       }
-      console.log('log', result, status);
+      setStatus('ready');
+      console.log('remove', result, status, reason);
     })();
   }
 
@@ -61,18 +75,18 @@ const ConfirmationProvider = ({children}) => {
     (async function(){
       setStatus('modify');
       let {result, reason} = await post('/api/confirmation/list', {project});
-      if(result === 'ok'){
-        setStatus('ready');
+      console.log(result, 'listing');
+      if(result !== 'error'){
         setList(result)
       } else {
-          setStatus('modify_failed');
-          setMsg(reason);
+        setMsg(reason);
       }
-      console.log('log', result, status);
+      setStatus('ready');
+      console.log('list', result, status, reason);
     })();
   }
 
-  return <ConfirmationContext.Provider value={{status, msg, list, create, modify, remove, listConfirmations}}>
+  return <ConfirmationContext.Provider value={{status, msg, list, create, modify, remove, upload, listConfirmations}}>
     {children}
   </ConfirmationContext.Provider>
 }
