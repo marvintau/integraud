@@ -88,6 +88,7 @@ router.post('/modify', (req, res) => {
 
     sleep(DELAY).then(() => {
         let {confirm_id, field, value} = req.body;
+        console.log('modifying', confirm_id, field, value);
         return modify(confirm_id, field, value);
     })
     .then((doc) => {

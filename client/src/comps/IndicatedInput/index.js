@@ -16,9 +16,7 @@ const indicatorStyle = {
   lineHeight: '1.5',
 }
 
-function IndicatedInput ({initValue, placeholder, submitMethod, width='4'}) {
-
-  console.log(initValue, 'indicate');
+export function IndicatedInput ({initValue, placeholder, submitMethod, width='4'}) {
 
   const [inputValue, setInputValue] = useState(initValue);
 
@@ -29,7 +27,7 @@ function IndicatedInput ({initValue, placeholder, submitMethod, width='4'}) {
       value={inputValue ? inputValue : ''}
       onChange={(e) => setInputValue(e.target.value)}
     />
-    <Button style={{marginLeft:'5px'}} color='primary' onClick={() => submitMethod(inputValue)}>确定</Button>
+    <Button disabled={!inputValue} style={{marginLeft:'5px'}} color='primary' onClick={() => submitMethod(inputValue)}>确定</Button>
   </div>
 
   const indicator = <div
@@ -44,48 +42,57 @@ function IndicatedInput ({initValue, placeholder, submitMethod, width='4'}) {
 }
 
 
-function ConfirmationButton({placeholder, submitMethod, width}){
-  return <Button className={`col-md-${width}`} onClick={submitMethod}>
+function ConfirmationButton({placeholder, submitMethod, width, color="dark"}){
+  return <Button className={`col-md-${width}`} color={color} onClick={submitMethod}>
     {placeholder}
   </Button>
 }
 
-export function ResendConfirmButton({reason, width}){
-
-  const props = {
-    placeholder: '确定重新发函',
-    submitMethod:() => {},
-    width
-  }
-
-  return <ConfirmationButton {...props}/>
-}
-
-export function ConfirmationDoneButton({reason, width}){
-
-  const props = {
-    placeholder: '确定回函金额相符',
-    submitMethod:() => {},
-    width
-  }
-
-  return <ConfirmationButton {...props}/>
-}
-
-export function AdjustAmountGroup({project, confirm_id, send_package_id}) {
+export function ResendConfirmButton({project, confirm_id, reason, width}){
 
   const {modify} = useContext(ConfirmationContext);
 
   const props = {
-      width: 6,
-      initValue:send_package_id,
-      placeholder: '调整后金额',
-      submitMethod: (adjustedAmount) => {
-          modify(project, confirm_id, 'confirm_status.adjusted_amount', adjustedAmount);
-      }
+    color: 'warning',
+    placeholder: '确定重新发函',
+    submitMethod:() => {
+      console.log('resend', confirm_id);
+      modify(project, confirm_id, 'confirm_status', {});
+    },
+    width
   }
 
-  console.log(props);
+  return <ConfirmationButton {...props}/>
+}
+
+export function ConfirmationDoneButton({project, confirm_id, reason, width}){
+
+  const {modify} = useContext(ConfirmationContext);
+
+  const props = {
+    color:'success',
+    placeholder: '确定回函金额相符',
+    width,
+    submitMethod:() => {
+      modify(project, confirm_id, 'confirm_status.confirm_done', true);
+    },
+  }
+
+  return <ConfirmationButton {...props}/>
+}
+
+export function AdjustAmountGroup({project, confirm_id, adjusted_amount}) {
+
+  const {modify} = useContext(ConfirmationContext);
+
+  const props = {
+    width: 6,
+    initValue: adjusted_amount,
+    placeholder: '回函金额不符-调整后金额',
+    submitMethod: (adjustedAmount) => {
+      modify(project, confirm_id, 'confirm_status.adjusted_amount', adjustedAmount);
+    }
+  }
 
   return <IndicatedInput {...props} />
 }
@@ -104,8 +111,6 @@ export function SendPackageGroup({project, confirm_id, send_package_id}) {
       }
   }
 
-  console.log(props);
-
   return <IndicatedInput {...props} />
 }
 
@@ -118,7 +123,7 @@ export function RecvPackageGroup({project, confirm_id, recv_package_id}) {
       initValue:recv_package_id,
       placeholder: '回函快递单号',
       submitMethod: (packageID) => {
-          modify(project, confirm_id, 'confirm_status.send_package_id', packageID);
+          modify(project, confirm_id, 'confirm_status.recv_package_id', packageID);
       }
   }
 

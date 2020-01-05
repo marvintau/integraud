@@ -4,14 +4,15 @@ import {Link} from 'react-router-dom';
 
 import {FixedSizeList as List} from 'react-window';
 
-import {SendPackageGroup, RecvPackageGroup, SubstituteGroup, ConfirmationDoneButton, AdjustAmountGroup, ResendConfirmButton} from './IndicatedInput';
+import {SendPackageGroup, RecvPackageGroup, SubstituteGroup, ConfirmationDoneButton, AdjustAmountGroup, ResendConfirmButton, IndicatedInput} from './IndicatedInput';
 
 import {ConfirmationContext} from '../context/confirmation';
 import {SelectedProjectContext} from '../context/selectedProject'
+import { ProjectContext } from '../context/projects';
 import {AuthContext} from '../context/auth';
 
 import '../file-input.css';
-import { ProjectContext } from '../context/projects';
+import '../scroll-bar.css';
 
 
 function Address({data={}}){
@@ -23,7 +24,7 @@ function Address({data={}}){
         margin: '3px'
     }
 
-    return <div style={{overflowY:'hidden', overflowWrap:'normal'}}>
+    return <div style={{overflowY:'hidden', overflowWrap:'normal'}} className="sleek-bar">
         <div style={lineStyle}><b>{name}</b></div>
         <div style={lineStyle}>{address}</div>
         <div style={{display:'flex',...lineStyle}}>
@@ -57,24 +58,34 @@ function AdjustConfirmationControl({project, confirm_id, confirm_status}){
 
     const [result, setResult] = useState('0');
 
-    const adjustConfirmationTypes = {
-        '0' : <ConfirmationDoneButton />,
-        '1' : <AdjustAmountGroup {...{project, confirm_id, confirm_status}} />,
-        '2' : <AdjustAmountGroup {...{project, confirm_id, confirm_status}} />,
-        '3' : <ResendConfirmButton />
+    const {confirm_done, adjusted_amount, substitute_test_id} = confirm_status;
+
+    if (confirm_done){
+        return <div style={{marginTop:'3px'}}>
+            <IndicatedInput {...{initValue:'函证程序结束', placeholder:'回函相符'}}/>
+        </div>
+    } else if (adjusted_amount !== undefined){
+        return <div style={{marginTop:'3px'}}>
+            <AdjustAmountGroup {...{adjusted_amount}}/>
+        </div>
     }
 
-    return <div style={{width:'100%', marginTop:'3px'}}>
-    <Input className="col-md-6" type="select" value={result} onChange={(e) => setResult(e.target.value)}>
-        <option value='0'>回函金额相符</option>
-        <option value='1'>回函金额不符-调节后一致</option>
-        <option value='2'>回函金额不符-已同意调整</option>
-        <option value='3'>回函金额不符-须重新发函</option>
-    </Input>
-    <div style={{marginTop:'3px'}}>
-        {adjustConfirmationTypes[result]}
-    </div>
-</div> 
+    const adjustConfirmationTypes = {
+        '0' : <ConfirmationDoneButton {...{project, confirm_id}}/>,
+        '1' : <AdjustAmountGroup {...{project, confirm_id}} />,
+        '2' : <ResendConfirmButton {...{project, confirm_id}}/>
+    }
+
+    return <div style={{display:'flex', width:'100%', marginTop:'3px'}}>
+        <Input className="col-md-4" type="select" value={result} onChange={(e) => setResult(e.target.value)}>
+            <option value='0'>回函金额相符</option>
+            <option value='1'>回函金额不符-调节后一致</option>
+            <option value='2'>回函金额不符-须重新发函</option>
+        </Input>
+        <div className='col-md-8'>
+            {adjustConfirmationTypes[result]}
+        </div>
+    </div> 
 
 }
 
@@ -84,11 +95,11 @@ function ReceivePackageControl({project, confirm_id, confirm_status}){
 
     const {recv_package_id, substitute_test_id} = confirm_status;
 
-    const resendPackage = () => {}
-
+    console.log(recv_package_id);
+    
     const substituteGroup = <SubstituteGroup {...{project, confirm_id, substitute_test_id}} />;
     const receivePackageGroup = <RecvPackageGroup {...{project, confirm_id, recv_package_id}} />;
-    const resendButton = <ResendConfirmButton />;
+    const resendButton = <ResendConfirmButton {...{project, confirm_id}}/>;
 
     const recvStatusControl = {
         '0': receivePackageGroup,
@@ -104,12 +115,14 @@ function ReceivePackageControl({project, confirm_id, confirm_status}){
             <AdjustConfirmationControl {...{project, confirm_id, confirm_status}} />
         </div>
         : <div style={{display:'flex', width:'100%', marginTop:'3px'}}>
-            <Input className="col-md-2" type="select" value={recvOption} onChange={(e) => setRecvOptions(e.target.value)}>
+            <Input className="col-md-4" type="select" value={recvOption} onChange={(e) => setRecvOptions(e.target.value)}>
                 <option value='0'>收到回函</option>
                 <option value='1'>重新发函</option>
                 <option value='2'>替代测试</option>
             </Input>
+            <div className="col-md-8">
             {recvStatusControl[recvOption]}
+            </div>
         </div>
 }
 
@@ -117,7 +130,7 @@ function MaintainConfirmStatus({project, confirm_id, confirm_status={}}){
 
     const {send_package_id} = confirm_status;
 
-    return <div style={{height:'150px', overflowY:'scroll'}}><div style={{margin:'10px'}}>
+    return <div className="sleek-bar" style={{height:'150px', overflowY:'scroll'}}><div style={{margin:'10px'}}>
         <SendPackageGroup {...{project, confirm_id, send_package_id}} />
         {send_package_id && <ReceivePackageControl {...{project, confirm_id, confirm_status}} />}
     </div></div>
@@ -154,8 +167,10 @@ function ConfirmationRow({index, data, style}){
     const [hovered, setHovered] = useState(false);
     const {project} = useContext(ProjectContext);
 
-    const {confirm_id, confirmee_info, confirmed_amount, confirm_status} = data[index];
-    console.log(confirm_status);
+    const {confirm_id, confirmee_info, confirmed_amount, confirm_status, history} = data[index];
+
+    console.log(history, 'history');
+
     const rowStyle = {
         display:"flex",
         background: index % 2 ?'#E8E8E8': "#FFFFFF"
@@ -184,8 +199,6 @@ export default function(){
         })();
     }, [])
 
-    console.log(project, members, 'has been defined');
-
     const confirmationItemCreate = (['supreme', 'governer'].includes(role) || (members[user] && members[user] === 'manager'))
     ? <Table><tbody><ConfirmationItemCreate /></tbody></Table>
     : undefined;
@@ -197,17 +210,19 @@ export default function(){
 
         let confirmationList = confirmationListData;
 
-        confirmationListElem = <List
-            style= {{borderTop: '1px solid black', borderBottom:'1px solid black', margin:'0px 10px'}}
-            height={580}
-            itemCount={confirmationList.length}
-            itemData={confirmationList}
-            itemSize={150}
-            itemKey={(index, data) => data[index].confirm_id}
-            width={'100%'}
-        >
-            {ConfirmationRow}
-        </List>
+        confirmationListElem = 
+            <List
+                style= {{borderTop: '1px solid black', borderBottom:'1px solid black', margin:'0px 10px'}}
+                className="sleek-bar"
+                height={580}
+                itemCount={confirmationList.length}
+                itemData={confirmationList}
+                itemSize={150}
+                itemKey={(index, data) => data[index].confirm_id}
+                width={'100%'}
+            >
+                {ConfirmationRow}
+            </List>
     }
 
     return <Col>

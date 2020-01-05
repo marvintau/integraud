@@ -23,6 +23,7 @@
     "react-select": "^3.0.8",
     "react-virtualized-auto-sizer": "^1.0.2",
     "react-window": "^1.8.5",
+    "simplebar-react": "^2.1.0",
     "xlsx": "^0.15.4"
   },
   "devDependencies": {

@@ -1,0 +1,26 @@
+.sleek-bar::-webkit-scrollbar {
+    height: 9px;
+    width: 9px;
+}
+  
+.sleek-bar::-webkit-scrollbar-track
+{
+    -webkit-box-shadow: transparent;
+    box-shadow: transparent;
+}
+
+.sleek-bar::-webkit-scrollbar-thumb
+{
+    width:9px;
+    height:9px;
+    border-radius:9px;
+    background-color: rgba(0,0,0,0);
+    transition: background-color 0.2s ease;
+}
+
+.sleek-bar:hover::-webkit-scrollbar-thumb
+{
+    background-color: rgba(0,0,0,0.3);
+}
+
+

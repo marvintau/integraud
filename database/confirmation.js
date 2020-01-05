@@ -85,7 +85,8 @@ function insertProject(arr, project_name){
  */
 
 function modify(confirm_id, field, value){
-  return confirmations.update({confirm_id}, {$set: {[field]: value}});
+  console.log('modify-database', confirm_id, field, value); 
+  return confirmations.update({confirm_id}, {$set: {[field]: value}, $push:{history: [field, value, Date()]}});
 }
 
 function list(project_name){
