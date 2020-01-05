@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom';
 
 import {FixedSizeList as List} from 'react-window';
 
-import {SendPackageGroup, RecvPackageGroup, SubstituteGroup} from './IndicatedInput';
+import {SendPackageGroup, RecvPackageGroup, SubstituteGroup, ConfirmationDoneButton, AdjustAmountGroup, ResendConfirmButton} from './IndicatedInput';
 
 import {ConfirmationContext} from '../context/confirmation';
 import {SelectedProjectContext} from '../context/selectedProject'
@@ -53,7 +53,32 @@ function ConfirmedAmount({data={}}){
     </div>
 }
 
-function ReceivePackage({project, confirm_id, confirm_status}){
+function AdjustConfirmationControl({project, confirm_id, confirm_status}){
+
+    const [result, setResult] = useState('0');
+
+    const adjustConfirmationTypes = {
+        '0' : <ConfirmationDoneButton />,
+        '1' : <AdjustAmountGroup {...{project, confirm_id, confirm_status}} />,
+        '2' : <AdjustAmountGroup {...{project, confirm_id, confirm_status}} />,
+        '3' : <ResendConfirmButton />
+    }
+
+    return <div style={{width:'100%', marginTop:'3px'}}>
+    <Input className="col-md-6" type="select" value={result} onChange={(e) => setResult(e.target.value)}>
+        <option value='0'>回函金额相符</option>
+        <option value='1'>回函金额不符-调节后一致</option>
+        <option value='2'>回函金额不符-已同意调整</option>
+        <option value='3'>回函金额不符-须重新发函</option>
+    </Input>
+    <div style={{marginTop:'3px'}}>
+        {adjustConfirmationTypes[result]}
+    </div>
+</div> 
+
+}
+
+function ReceivePackageControl({project, confirm_id, confirm_status}){
 
     const [recvOption, setRecvOptions] = useState('0');
 
@@ -63,7 +88,7 @@ function ReceivePackage({project, confirm_id, confirm_status}){
 
     const substituteGroup = <SubstituteGroup {...{project, confirm_id, substitute_test_id}} />;
     const receivePackageGroup = <RecvPackageGroup {...{project, confirm_id, recv_package_id}} />;
-    const resendButton = <Button style={{marginLeft:'5px'}} className="col-md-4" onClick={resendPackage}>确定重新发函</Button>;
+    const resendButton = <ResendConfirmButton />;
 
     const recvStatusControl = {
         '0': receivePackageGroup,
@@ -74,7 +99,10 @@ function ReceivePackage({project, confirm_id, confirm_status}){
     return substitute_test_id
         ? <div style={{marginTop:'3px'}}>{substituteGroup}</div>
         : recv_package_id
-        ? <div style={{marginTop:'3px'}}>{receivePackageGroup}</div>
+        ? <div style={{marginTop:'3px'}}>
+            {receivePackageGroup}
+            <AdjustConfirmationControl {...{project, confirm_id, confirm_status}} />
+        </div>
         : <div style={{display:'flex', width:'100%', marginTop:'3px'}}>
             <Input className="col-md-2" type="select" value={recvOption} onChange={(e) => setRecvOptions(e.target.value)}>
                 <option value='0'>收到回函</option>
@@ -89,10 +117,10 @@ function MaintainConfirmStatus({project, confirm_id, confirm_status={}}){
 
     const {send_package_id} = confirm_status;
 
-    return <div style={{margin: '4px'}}>
+    return <div style={{height:'150px', overflowY:'scroll'}}><div style={{margin:'10px'}}>
         <SendPackageGroup {...{project, confirm_id, send_package_id}} />
-        {send_package_id && <ReceivePackage {...{project, confirm_id, confirm_status}} />}
-    </div>
+        {send_package_id && <ReceivePackageControl {...{project, confirm_id, confirm_status}} />}
+    </div></div>
 }
 
 function FileSelect({upload}){

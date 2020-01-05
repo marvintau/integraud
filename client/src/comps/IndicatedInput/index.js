@@ -16,7 +16,7 @@ const indicatorStyle = {
   lineHeight: '1.5',
 }
 
-export default function IndicatedInput ({initValue, placeholder, submitMethod, width='4'}) {
+function IndicatedInput ({initValue, placeholder, submitMethod, width='4'}) {
 
   console.log(initValue, 'indicate');
 
@@ -29,7 +29,7 @@ export default function IndicatedInput ({initValue, placeholder, submitMethod, w
       value={inputValue ? inputValue : ''}
       onChange={(e) => setInputValue(e.target.value)}
     />
-    <Button style={{marginLeft:'5px'}} onClick={() => submitMethod(inputValue)}>确定</Button>
+    <Button style={{marginLeft:'5px'}} color='primary' onClick={() => submitMethod(inputValue)}>确定</Button>
   </div>
 
   const indicator = <div
@@ -42,6 +42,54 @@ export default function IndicatedInput ({initValue, placeholder, submitMethod, w
   ? inputGroup
   : indicator
 }
+
+
+function ConfirmationButton({placeholder, submitMethod, width}){
+  return <Button className={`col-md-${width}`} onClick={submitMethod}>
+    {placeholder}
+  </Button>
+}
+
+export function ResendConfirmButton({reason, width}){
+
+  const props = {
+    placeholder: '确定重新发函',
+    submitMethod:() => {},
+    width
+  }
+
+  return <ConfirmationButton {...props}/>
+}
+
+export function ConfirmationDoneButton({reason, width}){
+
+  const props = {
+    placeholder: '确定回函金额相符',
+    submitMethod:() => {},
+    width
+  }
+
+  return <ConfirmationButton {...props}/>
+}
+
+export function AdjustAmountGroup({project, confirm_id, send_package_id}) {
+
+  const {modify} = useContext(ConfirmationContext);
+
+  const props = {
+      width: 6,
+      initValue:send_package_id,
+      placeholder: '调整后金额',
+      submitMethod: (adjustedAmount) => {
+          modify(project, confirm_id, 'confirm_status.adjusted_amount', adjustedAmount);
+      }
+  }
+
+  console.log(props);
+
+  return <IndicatedInput {...props} />
+}
+
 
 export function SendPackageGroup({project, confirm_id, send_package_id}) {
 
