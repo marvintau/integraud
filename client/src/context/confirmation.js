@@ -1,20 +1,37 @@
-import React, {createContext, useState} from 'react';
+import React, {createContext, useState, useEffect} from 'react';
 
 import {post, postForm} from './fetch';
 
 const ConfirmationContext = createContext({
-  list:[],
+  origList:[],
+  displayed:[],
+  filters:[],
   upload:() => {},
   create:() => {},
   remove:() => {},
   modify:() => {},
-  listConfirmations: () => {}
+  addFilter:() => {},
+  removeFilter:() => {},
+  getList: () => {}
 })
 
 const ConfirmationProvider = ({children}) => {
   const [status, setStatus] = useState('logged_out')
   const [msg, setMsg] = useState(undefined);
+  const [origList, setOrigList] = useState([]);
+  const [filters, setFilters] = useState([]);
   const [list, setList] = useState([]);
+
+  const filterList = (filters, list) => {
+    if(list === undefined){
+      list = [...origList]
+    }
+    for (let {func:filterMethod} of filters){
+      list = list.filter(filterMethod);
+    }
+
+    setList(list);
+  }
 
   const upload = (file, project) => {
 
@@ -22,7 +39,7 @@ const ConfirmationProvider = ({children}) => {
 
       let formData = new FormData();
       formData.append('project', project);
-      formData.append('confirmation_list', file);
+      formData.append('confirmation_origList', file);
 
       setStatus('upload');
       let {result, reason} = await postForm('/api/confirmation/upload', formData);
@@ -57,6 +74,7 @@ const ConfirmationProvider = ({children}) => {
       setStatus('ready');
       console.log('modify', result, status, reason);
     })();
+    getList(project);
   }
 
   const remove = (confirm_id) => {
@@ -71,22 +89,62 @@ const ConfirmationProvider = ({children}) => {
     })();
   }
 
-  const listConfirmations = (project) => {
+  const getList = (project) => {
+    
     (async function(){
-      setStatus('modify');
+      setStatus('getList');
       let {result, reason} = await post('/api/confirmation/list', {project});
-      console.log(result, 'listing');
       if(result !== 'error'){
-        setList(result)
+        setOrigList(result)
+
+        // let list = result;
+        // for (let {func:filterMethod} of filters){
+        //   list = list.filter(filterMethod);
+        // }
+        // console.log('fiiltered list', origList, filters, list);
+        // setList(list);
+        
+        filterList(filters, result);
+
       } else {
         setMsg(reason);
       }
       setStatus('ready');
-      console.log('list', result, status, reason);
     })();
   }
 
-  return <ConfirmationContext.Provider value={{status, msg, list, create, modify, remove, upload, listConfirmations}}>
+  const addFilter = ({key, func}) => {
+
+    let newFilters = [...filters];
+
+    let existing = newFilters.find(({key:existingKey}) => existingKey === key);
+    if(existing){
+      existing.func = func;
+    } else {
+      newFilters.push({key, func})
+    }
+
+    console.log(filters, 'addFilter');
+
+    filterList(newFilters);
+    setFilters(newFilters);
+  };
+
+  const removeFilter = (removedKey) => {
+    let newFilters = filters.filter(({key}) => key !== removedKey);
+
+    let list = [...origList];
+    for (let {func:filterMethod} of newFilters){
+      list = list.filter(filterMethod);
+    }
+
+    filterList(newFilters);
+    setFilters(newFilters);
+  }
+
+  let value = {status, msg, list, create, modify, remove, upload, getList, addFilter, removeFilter };
+
+  return <ConfirmationContext.Provider value={value}>
     {children}
   </ConfirmationContext.Provider>
 }

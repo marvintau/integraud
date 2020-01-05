@@ -43,11 +43,11 @@ router.post('/upload', upload, (req, res) => {
 router.post('/list', (req, res) => {
 
   let {project} = req.body;
-  console.log('listinbg confirmation');
+  console.log('listinbg confirmation', project);
   sleep(DELAY).then(() => {
     return list(project);
   }).then((result) => {
-    // console.log(result)
+    console.log('found result', result.length)
     res.json({result});
   }).catch((error) => {
     console.log(error);

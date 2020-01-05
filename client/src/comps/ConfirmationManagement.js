@@ -5,10 +5,10 @@ import {Link} from 'react-router-dom';
 import {FixedSizeList as List} from 'react-window';
 
 import {SendPackageGroup, RecvPackageGroup, SubstituteGroup, ConfirmationDoneButton, AdjustAmountGroup, ResendConfirmButton, IndicatedInput} from './IndicatedInput';
+import {IndexFilter, AddressFilter} from './FilterableHeader';
 
 import {ConfirmationContext} from '../context/confirmation';
 import {SelectedProjectContext} from '../context/selectedProject'
-import { ProjectContext } from '../context/projects';
 import {AuthContext} from '../context/auth';
 
 import '../file-input.css';
@@ -94,8 +94,6 @@ function ReceivePackageControl({project, confirm_id, confirm_status}){
     const [recvOption, setRecvOptions] = useState('0');
 
     const {recv_package_id, substitute_test_id} = confirm_status;
-
-    console.log(recv_package_id);
     
     const substituteGroup = <SubstituteGroup {...{project, confirm_id, substitute_test_id}} />;
     const receivePackageGroup = <RecvPackageGroup {...{project, confirm_id, recv_package_id}} />;
@@ -165,11 +163,9 @@ function ConfirmationItemCreate(){
 function ConfirmationRow({index, data, style}){
 
     const [hovered, setHovered] = useState(false);
-    const {project} = useContext(ProjectContext);
+    const {project} = useContext(SelectedProjectContext);
 
     const {confirm_id, confirmee_info, confirmed_amount, confirm_status, history} = data[index];
-
-    console.log(history, 'history');
 
     const rowStyle = {
         display:"flex",
@@ -191,11 +187,11 @@ export default function(){
     
     const {user, role} = useContext(AuthContext);
     const {project, members} = useContext(SelectedProjectContext);
-    const {status, list:confirmationListData, listConfirmations} = useContext(ConfirmationContext);
+    const {status, list:confirmationListData, getList} = useContext(ConfirmationContext);
 
     useEffect(() => {
         (async () => {
-            await listConfirmations(project)
+            await getList(project)
         })();
     }, [])
 
@@ -203,16 +199,25 @@ export default function(){
     ? <Table><tbody><ConfirmationItemCreate /></tbody></Table>
     : undefined;
 
+    const confirmationListHeader = <div style={{display:'flex', background:'#343a40', color:'#FFF'}}>
+        <div style={{padding:'15px'}} className="col-md-2"><IndexFilter /></div>
+        <div style={{padding:'15px'}} className="col-md-2"><AddressFilter /></div>
+        <div style={{padding:'15px'}} className="col-md-2">函证金额</div>
+        <div style={{padding:'15px'}} className="col-md-6">函证状态管理</div>
+    </div>
+
     let confirmationListElem;
     if(status !== 'ready'){
-        confirmationListElem = <Spinner color="primary" size="xs" style={{margin:'10px'}} />;
+        confirmationListElem = <div style={{height:'580px', backgroundColor:'rgba(0, 0, 0, 0.1)'}}>
+            <Spinner color="primary" size="xs" style={{margin:'10px'}} />
+        </div>;
     } else {
 
         let confirmationList = confirmationListData;
 
         confirmationListElem = 
             <List
-                style= {{borderTop: '1px solid black', borderBottom:'1px solid black', margin:'0px 10px'}}
+                style= {{borderTop: '1px solid black', borderBottom:'1px solid black'}}
                 className="sleek-bar"
                 height={580}
                 itemCount={confirmationList.length}
@@ -227,6 +232,7 @@ export default function(){
 
     return <Col>
         {confirmationItemCreate}
+        {confirmationListHeader}
         {confirmationListElem}
         <Link to={`/project/${project}`}><Button color="primary" style={{margin: '10px'}}>返回</Button></Link>
     </Col>

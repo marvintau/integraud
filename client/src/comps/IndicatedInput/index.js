@@ -4,6 +4,7 @@ import {Input, Button} from 'reactstrap';
 import {ConfirmationContext} from '../../context/confirmation';
 
 const indicatorStyle = {
+  fontFamily: '"Arial Narrow", "Avenir Next Condensed"',
   display: 'inline-block',
   color: '#212529',
   verticalAlign: 'middle',
@@ -107,7 +108,7 @@ export function SendPackageGroup({project, confirm_id, send_package_id}) {
       initValue:send_package_id,
       placeholder: '发函快递单号',
       submitMethod: (packageID) => {
-          modify(project, confirm_id, 'confirm_status.send_package_id', packageID);
+        modify(project, confirm_id, 'confirm_status.send_package_id', packageID);
       }
   }
 
