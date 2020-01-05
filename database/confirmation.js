@@ -21,13 +21,17 @@ function removeProject(project_name){
 
 function recToDoc(record, project_name){
   let doc = {project_name};
+  doc.notes = '';
   doc.confirm_status = {};
   doc.confirm_id = record.ID;
   doc.confirmee_info = {
+    type: record.ConfirmType,
     name: record.CompanyName,
     address: record.CompanyAddress,
     contact: record.CompanyContactName,
-    phone: record.CompanyContactPhone
+    phone: record.CompanyContactPhone,
+    bank:record.CompanyBank,
+    bank_account:record.CompanyBankAccount
   }
   let {Subject, Amount, Reason} = record;
   console.log(record, {Subject, Amount, Reason});

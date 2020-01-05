@@ -5,7 +5,7 @@ import {Link} from 'react-router-dom';
 import {FixedSizeList as List} from 'react-window';
 
 import {SendPackageGroup, RecvPackageGroup, SubstituteGroup, ConfirmationDoneButton, AdjustAmountGroup, ResendConfirmButton, IndicatedInput} from './IndicatedInput';
-import {IndexFilter, AddressFilter} from './FilterableHeader';
+import {IndexFilter, AddressFilter, StatusFilter, NotesFilter} from './FilterableHeader';
 
 import {ConfirmationContext} from '../context/confirmation';
 import {SelectedProjectContext} from '../context/selectedProject'
@@ -14,6 +14,36 @@ import {AuthContext} from '../context/auth';
 import '../file-input.css';
 import '../scroll-bar.css';
 
+function Notes({hovered, notes='', project, confirm_id}){
+    const [isEditing, setEditing] = useState(false);
+    const [text, setText] = useState(notes);
+
+    useEffect(() => {
+        setText(notes);
+    },[notes])
+
+    const {modify} = useContext(ConfirmationContext);
+
+    const view = <div>
+        <div style={{margin: '3px'}}>{text}</div>
+        {hovered && <Button size="sm" color="primary" style={{margin: '3px'}} onClick={()=>setEditing(true)}>编辑备注</Button>}
+    </div>
+
+    const saveNotes = () => {
+        setEditing(false);
+        setText(text);
+        setText(text);
+        console.log(text, notes, 'save')
+        modify(project, confirm_id, 'notes', text);
+    }
+
+    const edit = <div>
+        <input className="form-control" style={{margin:'3px'}} value={text} onChange={(e) => setText(e.target.value)} />
+        <Button size="sm" color="primary" style={{margin: '3px'}} onClick={()=>saveNotes()}>保存</Button>
+    </div>
+
+    return isEditing ? edit : view;
+}
 
 function Address({data={}}){
 
@@ -62,7 +92,7 @@ function AdjustConfirmationControl({project, confirm_id, confirm_status}){
 
     if (confirm_done){
         return <div style={{marginTop:'3px'}}>
-            <IndicatedInput {...{initValue:'函证程序结束', placeholder:'回函相符'}}/>
+            <IndicatedInput {...{initValue:'函证程序结束', placeholder:'回函相符', width:8}}/>
         </div>
     } else if (adjusted_amount !== undefined){
         return <div style={{marginTop:'3px'}}>
@@ -113,7 +143,7 @@ function ReceivePackageControl({project, confirm_id, confirm_status}){
             <AdjustConfirmationControl {...{project, confirm_id, confirm_status}} />
         </div>
         : <div style={{display:'flex', width:'100%', marginTop:'3px'}}>
-            <Input className="col-md-4" type="select" value={recvOption} onChange={(e) => setRecvOptions(e.target.value)}>
+            <Input className="col-md-3" type="select" value={recvOption} onChange={(e) => setRecvOptions(e.target.value)}>
                 <option value='0'>收到回函</option>
                 <option value='1'>重新发函</option>
                 <option value='2'>替代测试</option>
@@ -126,10 +156,10 @@ function ReceivePackageControl({project, confirm_id, confirm_status}){
 
 function MaintainConfirmStatus({project, confirm_id, confirm_status={}}){
 
-    const {send_package_id} = confirm_status;
+    const {resended, send_package_id} = confirm_status;
 
     return <div className="sleek-bar" style={{height:'150px', overflowY:'scroll'}}><div style={{margin:'10px'}}>
-        <SendPackageGroup {...{project, confirm_id, send_package_id}} />
+        <SendPackageGroup {...{project, confirm_id, send_package_id, resended}} />
         {send_package_id && <ReceivePackageControl {...{project, confirm_id, confirm_status}} />}
     </div></div>
 }
@@ -165,7 +195,7 @@ function ConfirmationRow({index, data, style}){
     const [hovered, setHovered] = useState(false);
     const {project} = useContext(SelectedProjectContext);
 
-    const {confirm_id, confirmee_info, confirmed_amount, confirm_status, history} = data[index];
+    const {confirm_id, confirmee_info, confirmed_amount, confirm_status, notes, history} = data[index];
 
     const rowStyle = {
         display:"flex",
@@ -179,7 +209,8 @@ function ConfirmationRow({index, data, style}){
         <div className="col-md-2">{confirm_id}</div>
         <div className="col-md-2"><Address {...{data:confirmee_info}}/></div>
         <div className="col-md-2"><ConfirmedAmount {...{data:confirmed_amount}}/></div>
-        <div className="col-md-6"><MaintainConfirmStatus {...{hovered, project, confirm_id, confirm_status}} /></div>
+        <div className="col-md-4"><MaintainConfirmStatus {...{hovered, project, confirm_id, confirm_status}} /></div>
+        <div className="col-md-2"><Notes {...{hovered, project, confirm_id, notes}} /></div>
     </div>
 }
 
@@ -203,7 +234,8 @@ export default function(){
         <div style={{padding:'15px'}} className="col-md-2"><IndexFilter /></div>
         <div style={{padding:'15px'}} className="col-md-2"><AddressFilter /></div>
         <div style={{padding:'15px'}} className="col-md-2">函证金额</div>
-        <div style={{padding:'15px'}} className="col-md-6">函证状态管理</div>
+        <div style={{padding:'15px'}} className="col-md-4"><StatusFilter /></div>
+        <div style={{padding:'15px'}} className="col-md-4"><NotesFilter /></div>
     </div>
 
     let confirmationListElem;
