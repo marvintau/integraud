@@ -5,7 +5,7 @@ import {AuthContext} from '../context/auth';
 
 export default ({component: Component, roles, ...rest}) => {
 
-    let {user, role} = useContext(AuthContext);
+    let {role} = useContext(AuthContext);
 
     return <Route {...rest} render={props => {
 

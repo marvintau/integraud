@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import Select, {components} from 'react-select';
+import Select from 'react-select';
 
 import {ProjectContext} from '../../context/projects';
 

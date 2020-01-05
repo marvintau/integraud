@@ -29,7 +29,7 @@ export default function ({project, members}){
       roleProj:val,
       label:userNameDict[key].label,
       role:userNameDict[key].role,
-      isFixed: visibleOnly || val==='manager' && !['supreme', 'governer'].includes(role)
+      isFixed: visibleOnly || (val==='manager' && !['supreme', 'governer'].includes(role))
   }));
 
   if (visibleOnly){

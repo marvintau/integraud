@@ -6,7 +6,7 @@ import {AuthContext} from '../context/auth';
 
 export default function Home(){
 
-  const {user, nick, role} = useContext(AuthContext);
+  const {role} = useContext(AuthContext);
   
   let userManage, projectList;
 

@@ -38,7 +38,7 @@ const ConfirmationProvider = ({children}) => {
     (async function(){
       setStatus('create');
       let {result, reason} = await post('/api/confirmation/create', {confirm_id, project});
-      if(result != 'ok'){
+      if(result !== 'ok'){
         setMsg(reason);
       }
       setStatus('ready');

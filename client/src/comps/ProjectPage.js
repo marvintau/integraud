@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import {Col, Button, Row} from 'reactstrap';
+import {Button, Row} from 'reactstrap';
 import {useHistory} from 'react-router-dom';
 
 import {SelectedProjectContext} from '../context/selectedProject';

@@ -52,7 +52,7 @@ function useUsername(){
     const validDict = {
         'EMPTY' : (username) => username.length === 0,
         'LESS'  : (username) => username.length < 5,
-        'CHAR'  : (username) => !username.match(/^[\.\-_a-zA-Z0-9]+$/)
+        'CHAR'  : (username) => !username.match(/^[.\-_a-zA-Z0-9]+$/)
     }
 
     return useValidInput('用户名', 'username', validDict, msgDict);
