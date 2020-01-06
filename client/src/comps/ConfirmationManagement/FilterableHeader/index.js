@@ -1,7 +1,7 @@
 import React, {useState, useContext} from 'react';
 import {Input, Button} from 'reactstrap';
 
-import {ConfirmationContext} from '../../context/confirmation';
+import {ConfirmationContext} from '../../../context/confirmation';
 
 export function CondFilterHeader({desc, column, conds}){
 
@@ -26,8 +26,10 @@ export function CondFilterHeader({desc, column, conds}){
       </Input>
       <Button onClick={() => setFilter(option)}>确定</Button>
     </div>
-  : <div> {desc} <Button onClick={() => setEditing(true)}>筛选</Button> </div>
-
+  : <div style={{display:'flex', alignItems:'center', justifyContent:'space-between'}}>
+      <div> {desc} </div>
+      <Button onClick={() => setEditing(true)}>筛选</Button>
+    </div>
 }
 
 export function StatusFilter(){
@@ -55,7 +57,7 @@ export function StatusFilter(){
             return send_package_id !== undefined && recv_package_id === undefined}
         },
         not_confirm: {
-          desc: '已收到/未确认回函',
+          desc: '已收到回函',
           func: ({confirm_status}) => {
             const {recv_package_id} = confirm_status;
             return recv_package_id !== undefined;
@@ -135,7 +137,10 @@ export function FilterableHeader({desc, column, options}){
       <Input placeholder="输入查询内容" value={text} onChange={(e) => setText(e.target.value)} />
       <Button onClick={() => setFilter(text)}>确定</Button>
     </div>
-  : <div> {desc} <Button onClick={() => setEditing(true)}>筛选</Button> </div>
+  : <div style={{display:'flex', alignItems:'center', justifyContent:'space-between'}}>
+      <div> {desc} </div>
+      <Button onClick={() => setEditing(true)}>筛选</Button>
+    </div>
 }
 
 export function IndexFilter(){

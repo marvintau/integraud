@@ -1,8 +1,9 @@
 var express = require('express');
-var promisify = require('util').promisify;
 var multer = require('multer');
-var upload = multer().single('confirmation_list');
+var uploadSheet = multer().single('confirmation_list');
+var uploadTemplate = multer({dest:'../template/docx'}).single('confirmation_template');
 var xlsx = require('xlsx');
+
 
 
 var router = express.Router();
@@ -10,13 +11,15 @@ var router = express.Router();
 var {list, create, remove, removeProject, insertProject, modify} =  require('../database/confirmation');
 // import bcrypt from 'bcrypt';
 
+var {exportReport} = require('../template/word');
+
 const DELAY = 50;
 
 const sleep = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
 
-router.post('/upload', upload, (req, res) => {
+router.post('/uploadSheet', uploadSheet, (req, res) => {
 
   const {project} = req.body;
   const {buffer} = req.file;
@@ -39,6 +42,30 @@ router.post('/upload', upload, (req, res) => {
     }
   })()
 })
+
+router.post('/uploadTemplate', uploadTemplate, (req, res) => {
+
+  const {project} = req.body;
+  const {buffer} = req.file;
+
+
+  const table = xlsx.read(buffer, {type:'buffer'});
+  const firstSheet = table.Sheets[table.SheetNames[0]];
+  
+  const entries = xlsx.utils.sheet_to_json(firstSheet);
+
+  (async function(){
+    try{
+      await removeProject(project);
+      await insertProject(entries, project);
+      res.json({result:'ok'})
+    } catch (err) {
+      console.log(err);
+      res.json({result:'error', reason:err.errorType})
+    }
+  })()
+})
+
 
 router.post('/list', (req, res) => {
 

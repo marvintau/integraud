@@ -33,16 +33,16 @@ const ConfirmationProvider = ({children}) => {
     setList(list);
   }
 
-  const upload = (file, project) => {
+  const uploadSheet = (file, project) => {
 
     (async function(){
 
       let formData = new FormData();
       formData.append('project', project);
-      formData.append('confirmation_origList', file);
+      formData.append('confirmation_list', file);
 
       setStatus('upload');
-      let {result, reason} = await postForm('/api/confirmation/upload', formData);
+      let {result, reason} = await postForm('/api/confirmation/uploadSheet', formData);
       if(result === 'ok'){
         setMsg(reason);
       }
@@ -50,6 +50,25 @@ const ConfirmationProvider = ({children}) => {
       console.log('upload', result, status, reason);
     })();
   }
+
+  const uploadTemplate = (file, project) => {
+
+    (async function(){
+
+      let formData = new FormData();
+      formData.append('project', project);
+      formData.append('confirmation_template', file);
+
+      setStatus('upload');
+      let {result, reason} = await postForm('/api/confirmation/uploadTemplate', formData);
+      if(result === 'ok'){
+        setMsg(reason);
+      }
+      setStatus('ready');
+      console.log('upload', result, status, reason);
+    })();
+  }
+
 
   const create = (confirm_id, project) => {
     (async function(){
@@ -96,13 +115,6 @@ const ConfirmationProvider = ({children}) => {
       let {result, reason} = await post('/api/confirmation/list', {project});
       if(result !== 'error'){
         setOrigList(result)
-
-        // let list = result;
-        // for (let {func:filterMethod} of filters){
-        //   list = list.filter(filterMethod);
-        // }
-        // console.log('fiiltered list', origList, filters, list);
-        // setList(list);
         
         filterList(filters, result);
 
@@ -142,7 +154,7 @@ const ConfirmationProvider = ({children}) => {
     setFilters(newFilters);
   }
 
-  let value = {status, msg, list, create, modify, remove, upload, getList, addFilter, removeFilter };
+  let value = {status, msg, list, create, modify, remove, uploadSheet, uploadTemplate, getList, addFilter, removeFilter };
 
   return <ConfirmationContext.Provider value={value}>
     {children}
