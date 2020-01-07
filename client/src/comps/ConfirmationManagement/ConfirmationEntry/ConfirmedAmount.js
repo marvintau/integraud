@@ -1,21 +1,36 @@
 import React from 'react';
 
 export default function ConfirmedAmount({data={}}){
-    const {subject, amount=0, reason} = data;
+    const {contents, reason} = data;
 
-    const lineStyle = {
-        overflowY:'hidden',
-        overflowWrap:"normal",
-        whiteSpace:'nowrap',
-        margin: '3px'
+    const subjects = Object.keys(contents).map((subject, i) => {
+        return <div key={i} style={{overflowWrap:'normal', whiteSpace:'nowrap'}}>{subject}</div>
+    })
+
+
+    const amountStyle = {
+        textAlign:'right',
+        marginLeft:'5px',
+        fontFamily:'Arial Narrow',
+        fontWeight:'bold'
     }
 
-    const displayedAmount = Number(amount).toLocaleString('en-us', {maximumFractionDigits:2, minimumFractionDigits:2})
-
-    return <div>
-        <div style={{display:'flex', justifyContent:"space-between",...lineStyle}}>
-            <div>{subject}</div>
-            <div style={{marginLeft:'5px', fontFamily:'Arial Narrow', fontWeight:'bold'}} >{displayedAmount}</div>
+    const amounts = Object.values(contents).map((value, i) => {
+        const amount = Number(value).toLocaleString('en-us', {maximumFractionDigits:2, minimumFractionDigits:2});
+        return  <div key={i} style={amountStyle} >
+            {amount}
         </div>
+    })
+
+    const style = {
+        margin:'10px 0px',
+        overflowY:'hidden',
+        display:'flex',
+        justifyContent:"space-between"
+    }
+
+    return <div style={style}>
+        <div style={{overflowX:'scroll'}}  className="sleek-bar">{subjects}</div>
+        <div>{amounts}</div>
     </div>
 }

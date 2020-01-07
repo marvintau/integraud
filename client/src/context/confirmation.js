@@ -1,4 +1,4 @@
-import React, {createContext, useState, useEffect} from 'react';
+import React, {createContext, useState} from 'react';
 
 import {post, postForm} from './fetch';
 
@@ -6,13 +6,20 @@ const ConfirmationContext = createContext({
   origList:[],
   displayed:[],
   filters:[],
-  upload:() => {},
+  uploadSheet:() => {},
   create:() => {},
   remove:() => {},
   modify:() => {},
   addFilter:() => {},
   removeFilter:() => {},
-  getList: () => {}
+  getList: () => {},
+
+  templateList:[],
+  uploadTemplate:() => {},
+  removeTemplate:() => {},
+  getTemplateList: () => {},
+
+  generateDocs: () => {}
 })
 
 const ConfirmationProvider = ({children}) => {
@@ -21,6 +28,8 @@ const ConfirmationProvider = ({children}) => {
   const [origList, setOrigList] = useState([]);
   const [filters, setFilters] = useState([]);
   const [list, setList] = useState([]);
+
+  const [templateList, setTemplateList] = useState([]);
 
   const filterList = (filters, list) => {
     if(list === undefined){
@@ -33,7 +42,7 @@ const ConfirmationProvider = ({children}) => {
     setList(list);
   }
 
-  const uploadSheet = (file, project) => {
+  const uploadSheet = (file, {project}) => {
 
     (async function(){
 
@@ -51,14 +60,14 @@ const ConfirmationProvider = ({children}) => {
     })();
   }
 
-  const uploadTemplate = (file, project) => {
+  const uploadTemplate = (file, {type}) => {
 
     (async function(){
 
       let formData = new FormData();
-      formData.append('project', project);
+      formData.append('template_type', type);
       formData.append('confirmation_template', file);
-
+      console.log(formData.get('confirmation_template'));
       setStatus('upload');
       let {result, reason} = await postForm('/api/confirmation/uploadTemplate', formData);
       if(result === 'ok'){
@@ -67,6 +76,7 @@ const ConfirmationProvider = ({children}) => {
       setStatus('ready');
       console.log('upload', result, status, reason);
     })();
+    getTemplateList();
   }
 
 
@@ -108,6 +118,20 @@ const ConfirmationProvider = ({children}) => {
     })();
   }
 
+  const removeTemplate = (template_type) => {
+    console.log(template_type, 'removed');
+    (async function(){
+      setStatus('removed');
+      let {result, reason} = await post('/api/confirmation/removeTemplate', {template_type});
+      if(result === 'ok'){
+        setMsg(reason);
+      }
+      setStatus('ready');
+      console.log('remove', result, status, reason);
+    })();
+    getTemplateList();
+  }
+
   const getList = (project) => {
     
     (async function(){
@@ -118,6 +142,19 @@ const ConfirmationProvider = ({children}) => {
         
         filterList(filters, result);
 
+      } else {
+        setMsg(reason);
+      }
+      setStatus('ready');
+    })();
+  }
+
+  const getTemplateList = () => {
+    (async function() {
+      setStatus('getTemplateList');
+      let {result, reason} = await post('api/confirmation/listTemplates', {});
+      if(result !== 'error'){
+        setTemplateList(result);
       } else {
         setMsg(reason);
       }
@@ -154,7 +191,26 @@ const ConfirmationProvider = ({children}) => {
     setFilters(newFilters);
   }
 
-  let value = {status, msg, list, create, modify, remove, uploadSheet, uploadTemplate, getList, addFilter, removeFilter };
+  const generateDocs = (project) => {
+    (async function() {
+      setStatus('generating_docs');
+      let {result, reason} = await post('api/confirmation/generateDocs', {project});
+      if(result === 'ok'){
+        console.log('generated ok');
+      } else {
+        setMsg(reason);
+      }
+      setStatus('ready');
+    })();
+  }
+
+  let value = {
+    status, msg, list, 
+    create, modify, remove, uploadSheet, uploadTemplate, getList,
+    addFilter, removeFilter,
+    templateList, uploadTemplate, removeTemplate, getTemplateList,
+    generateDocs
+  };
 
   return <ConfirmationContext.Provider value={value}>
     {children}

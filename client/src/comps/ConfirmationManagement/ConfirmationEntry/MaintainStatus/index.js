@@ -16,7 +16,7 @@ function SendPackageGroup({project, confirm_id, send_package_id, resended, modif
     }
   
     return <div>
-      {resended && <Badge style={{margin: '3px'}} color='warning'>二次发函</Badge>}
+      {resended && <div><Badge style={{margin: '3px'}} color='warning'>二次发函</Badge></div>}
       <IndicatedInput {...props} />
     </div>
 }
