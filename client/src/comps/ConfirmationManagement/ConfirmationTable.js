@@ -14,7 +14,8 @@ function UploadTable({project}){
 
     return <div style={{display:'flex', margin:'5px', alignItems:'center'}}>
         <div className="col-md-2" style={{marginRight:'15px'}}><div>上传被函证单位的名录</div></div>
-        <div className="col-md-8"><FileSelect {...{upload:uploadSheet, form:{project}}}/></div>
+        <div className="col-md-6"><FileSelect {...{upload:uploadSheet, form:{project}}}/></div>
+        <div className="col-md-2"><a href="template/xlsx/ConfirmSummaryTemplate.xlsx" download>下载一个示例</a></div>
         <div className="col-md-2"><Button color="primary" onClick={() => generateDocs(project)}>生成确认函文档</Button></div>
         <div >{msg ?? <span>{msg}</span>}</div>
     </div>

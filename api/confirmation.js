@@ -6,7 +6,7 @@ var multer = require('multer');
 var uploadSheet = multer().single('confirmation_list');
 var uploadTemplate = multer({
   storage:multer.diskStorage({
-    destination: 'template/docx/',
+    destination: 'public/template/docx/',
     filename: (req, file, cb) => {
       cb(null, `TEMPLATE.${req.body.template_type}.docx`)
     }
@@ -74,7 +74,7 @@ router.post('/list', (req, res) => {
 
 router.post('/listTemplates', (req, res) => {
   sleep(DELAY).then(() => {
-    return fs.readdir('template/docx/')
+    return fs.readdir('public/template/docx/')
   }).then((result) => {
     console.log(result);
     res.json({result});
