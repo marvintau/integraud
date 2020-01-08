@@ -1,7 +1,11 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, createRef} from 'react';
 import {AuthContext} from '../context/auth';
 import {Navbar, Nav, Button} from 'reactstrap';
+import ReactTooltip from 'react-tooltip'
+
 import {useHistory} from 'react-router-dom';
+
+import * as QRCode from 'easyqrcodejs';
 
 function LogButton({type}){
 
@@ -25,7 +29,20 @@ function LogButton({type}){
 
 export default () => {
 
+  const qrcode = createRef();
+
   const {user, role, nick} = useContext(AuthContext);
+
+  useEffect(() => {
+    if(user){
+      console.log('acruallly runned')
+      new QRCode(qrcode.current, {
+        text: `http://47.105.171.13:3000/confirmation-mobile`,
+        width: 256,
+        height: 256,
+      });
+    }
+  }, [user])
 
   const roleName = {
     supreme: '最高管理员',
@@ -38,6 +55,12 @@ export default () => {
 
   return <Navbar color="light" light expand="md">
     <div> {user === undefined ? '' : `您好, ${nick}(${roleName})`}</div>
+    {user && <Nav id="show-qr-code" className="ml-auto">
+      <Button data-tip data-for="qrcode-toggle" color="info">显示手机登录二维码</Button>
+      <ReactTooltip id='qrcode-toggle' effect="solid" type='light' place='bottom'>
+        <div ref={qrcode}></div>
+      </ReactTooltip>
+    </Nav>}
     <Nav className="ml-auto">
       <LogButton type={type} />
     </Nav>

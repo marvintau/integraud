@@ -11,6 +11,8 @@ import ProjectManagement from './comps/ProjectManagement';
 import ProjectPage from './comps/ProjectPage';
 import ConfirmationManagement from './comps/ConfirmationManagement';
 
+import ConfirmationMobile from './comps/ConfirmationMobile';
+
 import {AuthProvider} from './context/auth';
 import {ProjectProvider} from './context/projects';
 import {SelectedProjectProvider} from './context/selectedProject';
@@ -48,6 +50,7 @@ function App() {
               <RoleBasedRoute path="/project-management" component={ProjectManagement} roles={['supreme', 'governer', 'manager', 'normal']}/>
               <RoleBasedRoute path="/project" component={ProjectPage} roles={['supreme', 'governer', 'manager', 'normal']}/>
               <RoleBasedRoute path="/confirmation-management" component={ConfirmationManagement} roles={['supreme', 'governer', 'manager', 'normal']}/>
+              <RoleBasedRoute path='/confirmation-mobile' component={ConfirmationMobile} roles={['supreme', 'governer', 'manager', 'normal']} />
             </Switch>
           </Router>
           </ConfirmationProvider>
