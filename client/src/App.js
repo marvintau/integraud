@@ -1,7 +1,7 @@
 import React, { useEffect} from 'react';
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 
-import {Button} from 'reactstrap';
+import {Button, Col} from 'reactstrap';
 
 import RoleBasedRoute from './comps/RoleBasedRoute';
 import Login from './comps/Login';
@@ -68,7 +68,9 @@ function App() {
       </ProjectProvider>
     </AuthProvider>
 
-    {mobile && <Button>点我扫码</Button>}
+    <div className="container" style={{textAlign:'center'}}>
+      <Button size="lg" color="primary">点我扫码</Button>
+    </div>
 
   </div>
 }
