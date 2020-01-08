@@ -1,6 +1,6 @@
 import React, {createContext, useState} from 'react';
 
-import {post, postForm} from './fetch';
+import {post, postForm, postFetchDownload} from './fetch';
 
 const ConfirmationContext = createContext({
   origList:[],
@@ -191,15 +191,21 @@ const ConfirmationProvider = ({children}) => {
     setFilters(newFilters);
   }
 
+  const createDownloadable = (blob, filename) => {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+    a.click();    
+    a.remove();  //afterwards we remove the element again     
+  }
+
   const generateDocs = (project) => {
     (async function() {
       setStatus('generating_docs');
-      let {result, reason} = await post('api/confirmation/generateDocs', {project});
-      if(result === 'ok'){
-        console.log('generated ok');
-      } else {
-        setMsg(reason);
-      }
+      let archivedBlob = await postFetchDownload('api/confirmation/generateDocs', {project});
+      createDownloadable(archivedBlob, `${project}.zip`);
       setStatus('ready');
     })();
   }

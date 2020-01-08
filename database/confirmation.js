@@ -1,8 +1,13 @@
+const fs = require('fs');
 const path = require('path');
 const DataStore = require('nedb-promise');
 const QRCode = require('easyqrcodejs-nodejs');
 
 const createDocs = require('docx-templates');
+const archiver = require('archiver');
+
+
+// 存档警告
 
 let confirmations = new DataStore({
     filename: path.resolve(__dirname, './confirmation.db'),
@@ -217,25 +222,61 @@ function list(project_name){
 }
 
 function generateDocs(project_name){
-  confirmations.find({project_name})
+
+  const archive = archiver('zip', {
+    zlib: { level: 5 }
+  })
+
+  archive.on('warning', function(err) {
+    if (err.code === 'ENOENT') {
+      console.warn('stat故障和其他非阻塞错误')
+    } else {
+      throw err
+    }
+  })
+  
+  // 存档出错
+  archive.on('error', function(err) {
+    throw err
+  })  
+
+  return confirmations.find({project_name})
   .then(result => {
 
     let slice = result.slice(0, 10);
 
+    const template = 'public/template/docx/TEMPLATE.test.docx';
+    const baseProps = {
+      template,
+      additionalJsContext: {
+        qrCode: dataUrl => {
+          const data = dataUrl.slice('data:image/gif;base64,'.length);
+          return { width: 2, height: 2, data, extension: '.gif' };
+        },
+      }
+    }
+
+    let output = fs.createWriteStream(`generated/${project_name}/wrapped.zip`);
+
+    archive.pipe(output)
+
     for (let rec of slice){
       let {project_name, confirm_id} = rec;
-      createDocs({
-        template: 'template/docx/TEMPLATE.test.docx',
-        output:`generated/${project_name}/RESULT.${project_name}-${confirm_id}.docx`,
-        data: rec,
-        additionalJsContext: {
-          qrCode: dataUrl => {
-            const data = dataUrl.slice('data:image/gif;base64,'.length);
-            return { width: 2, height: 2, data, extension: '.gif' };
-          },
-        }
+
+      let filePath = `generated/${project_name}/RESULT.${project_name}-${confirm_id}.docx`;
+
+      createDocs({...baseProps,
+        output: filePath,
+        data: rec,  
       })
+
+      console.log(confirm_id, 'adding')
+      archive.file(filePath, {name:`${project_name}-${confirm_id}.docx`})
     }
+    console.log('unexpected filanlize')
+    archive.finalize();
+
+    return project_name
   })
 }
 

@@ -1,4 +1,5 @@
 var fs = require('fs').promises;
+var {readFileSync} = require('fs');
 var del = require('del');
 
 var express = require('express');
@@ -149,8 +150,11 @@ router.post('/generateDocs', (req, res) => {
       let {project} = req.body;
       return generateDocs(project);
   })
-  .then((doc) => {
-    res.json({result: 'ok'})
+  .then((project) => {
+    console.log(`generated/${project}/wrapped.zip`)
+    const buffer = readFileSync(`generated/${project}/wrapped.zip`);
+    console.log(buffer, 'buffer');
+    res.send(buffer);
   })
   .catch((err) => {
       console.log(err);
