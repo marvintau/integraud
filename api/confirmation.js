@@ -151,9 +151,9 @@ router.post('/generateDocs', (req, res) => {
       return generateDocs(project);
   })
   .then((project) => {
-    console.log(`generated/${project}/wrapped.zip`)
-    const buffer = readFileSync(`generated/${project}/wrapped.zip`);
-    console.log(buffer, 'buffer');
+    return fs.readFile(`generated/${project}/wrapped.zip`);
+  })
+  .then((buffer) => {
     res.send(buffer);
   })
   .catch((err) => {

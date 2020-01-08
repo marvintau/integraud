@@ -4,7 +4,7 @@ const DataStore = require('nedb-promise');
 const QRCode = require('easyqrcodejs-nodejs');
 
 const createDocs = require('docx-templates');
-const archiver = require('archiver');
+const archiver = require('archiver-promise');
 
 
 // 存档警告
@@ -227,19 +227,6 @@ function generateDocs(project_name){
     zlib: { level: 5 }
   })
 
-  archive.on('warning', function(err) {
-    if (err.code === 'ENOENT') {
-      console.warn('stat故障和其他非阻塞错误')
-    } else {
-      throw err
-    }
-  })
-  
-  // 存档出错
-  archive.on('error', function(err) {
-    throw err
-  })  
-
   return confirmations.find({project_name})
   .then(result => {
 
@@ -274,9 +261,11 @@ function generateDocs(project_name){
       archive.file(filePath, {name:`${project_name}-${confirm_id}.docx`})
     }
     console.log('unexpected filanlize')
-    archive.finalize();
-
-    return project_name
+    return archive.finalize();
+  }).then(() => {
+    return project_name;
+  }).catch(err => {
+    console.log(err);
   })
 }
 
