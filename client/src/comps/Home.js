@@ -29,10 +29,12 @@ export default function Home(){
   const warpToConfirmManagement = (result) => {
     
     const url = new URL(result.text);
-    const {user, goto} = url.searchParams;
+
+    const goto = url.searchParams.get('goto');
+    const user = url.searchParams.get('user');
 
     if(goto !== 'confirmation'){
-      setMessage(JSON.stringify(url.searchParams));
+      setMessage('您可能扫描了错误的二维码。');
     } else {
       history.push(`/confirmation-mobile?user=${user}`);
     }    
