@@ -1,12 +1,16 @@
 import React, {useContext} from 'react';
-import {Link} from 'react-router-dom';
+import {Link, useHistory} from 'react-router-dom';
 import {Col, Button} from 'reactstrap';
+
+import Scanner from './Scanner';
 
 import {AuthContext} from '../context/auth';
 
 export default function Home(){
 
   const {role} = useContext(AuthContext);
+
+  const history = useHistory();
   
   let userManage, projectList;
 
@@ -22,9 +26,16 @@ export default function Home(){
     </Link>
   }
 
-  return <Col size="md-12" style={{display:'flex', flexDirection:'column'}}>
-      {userManage}
-      {projectList}
-  </Col>
+  const warp = (result) => {
+    history.push(result.text);
+  }
+
+  return <>
+    <Col size="md-12" style={{display:'flex', flexDirection:'column'}}>
+        {userManage}
+        {projectList}
+    </Col>
+    <Scanner success={warp} />
+  </>
 }
   
