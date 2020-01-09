@@ -10,8 +10,8 @@ var app = require('../app');
 var debug = require('debug')('integraud:server');
 var https = require('https');
 
-var privateKey  = fs.readFileSync('cert/private.pem', 'utf8');
-var certificate = fs.readFileSync('cert/integraud.crt', 'utf8');
+var privateKey  = fs.readFileSync('cert/www.stewardship.tech.key');
+var certificate = fs.readFileSync('cert/www.stewardship.tech.pem');
 var credentials = {key: privateKey, cert: certificate};
 
 /**
