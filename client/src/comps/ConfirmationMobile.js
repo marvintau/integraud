@@ -7,8 +7,5 @@ import {Route, Link} from 'react-router-dom';
 
 export default function (props) {
 
-    return <Col md={{size: 4, offset:4}}>
-        ho ho ho
-        {props.match.location.search}
-    </Col>
+    return <h2>哈哈哈</h2>
 }
