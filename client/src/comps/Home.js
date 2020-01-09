@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useState, useContext} from 'react';
 import {Link, useHistory} from 'react-router-dom';
 import {Col, Button} from 'reactstrap';
 
@@ -8,8 +8,8 @@ import {AuthContext} from '../context/auth';
 
 export default function Home(){
 
+  const [message, setMessage] = useState('');
   const {role} = useContext(AuthContext);
-
   const history = useHistory();
   
   let userManage, projectList;
@@ -26,8 +26,16 @@ export default function Home(){
     </Link>
   }
 
-  const warp = (result) => {
-    history.push(result.text);
+  const warpToConfirmManagement = (result) => {
+    
+    const url = new URL(result.text);
+    const {user, goto} = url.searchParams;
+
+    if(goto !== 'confirmation'){
+      setMessage('您可能扫了错误的二维码。请继续扫一下您刚才扫过的二维码，完成登录');
+    } else {
+      history.push(`/confirmation-mobile?user=${user}`);
+    }    
   }
 
   return <>
@@ -35,7 +43,8 @@ export default function Home(){
         {userManage}
         {projectList}
     </Col>
-    <Scanner success={warp} />
+    <Scanner success={warpToConfirmManagement} />
+    <Col style={{margin: '30px', width:'100%'}}>{message}</Col>
   </>
 }
   
