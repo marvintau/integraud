@@ -7,8 +7,6 @@ var logger = require('morgan');
 var app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -27,7 +25,7 @@ app.use('/api/user', require('./api/user'));
 app.use('/api/confirmation', require('./api/confirmation'));
 
 app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, 'client/public', 'index.html'))
+  res.sendFile(path.resolve(__dirname, 'client/build', 'index.html'))
 });
 
 
