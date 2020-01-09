@@ -1,11 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import {useHistory} from 'react-router-dom';
 import {Button} from 'reactstrap';
 
-import { BrowserQRCodeReader } from '@zxing/library';
+import { BrowserMultiFormatReader } from '@zxing/library';
 
 function initReader(){
-    const codeReader = new BrowserQRCodeReader();
+    const codeReader = new BrowserMultiFormatReader();
   
     return codeReader.getVideoInputDevices()
     .then(videoInputDevices => {
@@ -29,7 +28,7 @@ function initReader(){
   };
   
 
-export default function Scanner ({success}) {
+export default function QRCodeScanner ({success}) {
 
     const mobile = mobilecheck();
 

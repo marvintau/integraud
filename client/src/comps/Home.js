@@ -2,7 +2,7 @@ import React, {useState, useContext} from 'react';
 import {Link, useHistory} from 'react-router-dom';
 import {Col, Button} from 'reactstrap';
 
-import Scanner from './Scanner';
+import QRCodeScanner from './QRCodeScanner';
 
 import {AuthContext} from '../context/auth';
 
@@ -45,7 +45,7 @@ export default function Home(){
         {userManage}
         {projectList}
     </Col>
-    <Scanner success={warpToConfirmManagement} />
+    <QRCodeScanner success={warpToConfirmManagement} />
     <Col style={{margin: '30px', width:'100%'}}>{message}</Col>
   </>
 }
