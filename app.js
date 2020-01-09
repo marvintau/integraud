@@ -19,9 +19,7 @@ app.use(cookieParser());
 // So we don't need to specify the public path. However, In production
 // environment, all static assets are put in <dir>/client/build.
 if (process.env.NODE_ENV === "production") {
-  let main = express.static(path.resolve(__dirname, "client/build"));
-  app.use(main);
-  app.use('/confirmation-mobile', main);
+  app.use(express.static(path.resolve(__dirname, "client/build")));
 }
 
 app.use('/api/project', require('./api/project'));

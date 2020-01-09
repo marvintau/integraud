@@ -10,7 +10,5 @@ export default function (props) {
     return <Col md={{size: 4, offset:4}}>
         ho ho ho
         {props.match.location.search}
-        {/* <Route path="/login"><Login {...props} /></Route>
-        <Route path="/register"><Register {...props} /></Route> */}
     </Col>
 }
