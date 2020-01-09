@@ -37,7 +37,7 @@ function App() {
               <RoleBasedRoute path="/project-management" component={ProjectManagement} roles={['supreme', 'governer', 'manager', 'normal']}/>
               <RoleBasedRoute path="/project" component={ProjectPage} roles={['supreme', 'governer', 'manager', 'normal']}/>
               <RoleBasedRoute path="/confirmation-management" component={ConfirmationManagement} roles={['supreme', 'governer', 'manager', 'normal']}/>
-              <RoleBasedRoute path='/confirmation-mobile.*' component={ConfirmationMobile} roles={['supreme', 'governer', 'manager', 'normal', 'visitor']} />
+              <RoleBasedRoute path='/confirmation-mobile' component={ConfirmationMobile} roles={['supreme', 'governer', 'manager', 'normal', 'visitor']} />
             </Switch>
           </Router>
           </ConfirmationProvider>
