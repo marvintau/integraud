@@ -32,7 +32,7 @@ export default function Home(){
     const {user, goto} = url.searchParams;
 
     if(goto !== 'confirmation'){
-      setMessage('您可能扫了错误的二维码。请继续扫一下您刚才扫过的二维码，完成登录');
+      setMessage(JSON.stringify(url.searchParams));
     } else {
       history.push(`/confirmation-mobile?user=${user}`);
     }    
