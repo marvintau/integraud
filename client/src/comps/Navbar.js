@@ -37,7 +37,7 @@ export default () => {
     if(user){
       console.log('acruallly runned')
       new QRCode(qrcode.current, {
-        text: `http://47.105.171.13:3000/?user=${user}&role=${role}&goto=confirmation`,
+        text: `https://47.105.171.13:3000/?user=${user}&role=${role}&goto=confirmation`,
         width: 256,
         height: 256,
       });
