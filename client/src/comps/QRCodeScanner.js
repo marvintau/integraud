@@ -28,7 +28,7 @@ function initReader(){
   };
   
 
-export default function QRCodeScanner ({success}) {
+export default function QRCodeScanner ({buttonName, success}) {
 
     const mobile = mobilecheck();
 
@@ -58,7 +58,7 @@ export default function QRCodeScanner ({success}) {
         {mobile && 
             <div>
                 <video id="video" width="200" height="200" style={{border: '1px solid gray', margin:'30px'}} />
-                <Button style={{margin:'30px'}} size="lg" color="primary" onClick={() => decodeOnce(reader, deviceID)}>扫码进入工作页面</Button>
+                <Button style={{margin:'30px'}} size="lg" color="primary" onClick={() => decodeOnce(reader, deviceID)}>{buttonName}</Button>
             </div>
         }
         <div>{message}</div>

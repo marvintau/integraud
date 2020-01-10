@@ -45,8 +45,6 @@ export default function Home(){
         {userManage}
         {projectList}
     </Col>
-    <QRCodeScanner success={warpToConfirmManagement} />
-    <Col style={{margin: '30px', width:'100%'}}>{message}</Col>
   </>
 }
   
