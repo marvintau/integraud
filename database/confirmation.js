@@ -166,7 +166,7 @@ function insertProject(arr, project_name){
 
   return Promise.all(docs.map(async function(doc){
     let {project_name, confirm_id} = doc;
-    doc.qrcode = await generateQR(`${project_name}-${confirm_id}`);
+    doc.qrcode = await generateQR(`${project_name}<|<|>|>${confirm_id}`);
     return doc;
   })).then(resolvedDocs => {
     console.log(resolvedDocs);
@@ -221,6 +221,10 @@ function list(project_name){
   return confirmations.find({project_name})
 }
 
+function get(project_name, confirm_id){
+  return confirmations.find({project_name, confirm_id});
+}
+
 function generateDocs(project_name){
 
   const archive = archiver('zip', {
@@ -230,7 +234,9 @@ function generateDocs(project_name){
   return confirmations.find({project_name})
   .then(result => {
 
-    let slice = result.slice(0, 10);
+    let selected = result;
+
+    console.log(fs.readdirSync('generated'), 'check folder');
 
     const template = 'public/template/docx/TEMPLATE.test.docx';
     const baseProps = {
@@ -243,25 +249,24 @@ function generateDocs(project_name){
       }
     }
 
-    let output = fs.createWriteStream(`generated/${project_name}/wrapped.zip`);
+    // let archiveOutput = fs.createWriteStream(`generated/${project_name}/wrapped.zip`);
 
-    archive.pipe(output)
+    // archive.pipe(archiveOutput)
 
-    for (let rec of slice){
+    for (let rec of selected){
       let {project_name, confirm_id} = rec;
 
-      let filePath = `generated/${project_name}/RESULT.${project_name}-${confirm_id}.docx`;
+      let outputPath = `generated/${project_name}/RESULT.${project_name}-${confirm_id}.docx`;
 
       createDocs({...baseProps,
-        output: filePath,
+        output: outputPath,
         data: rec,  
       })
 
-      console.log(confirm_id, 'adding')
-      archive.file(filePath, {name:`${project_name}-${confirm_id}.docx`})
+      // archive.file(outputPath, {name:`${project_name}-${confirm_id}.docx`})
     }
-    console.log('unexpected filanlize')
-    return archive.finalize();
+    // return archive.finalize();
+    return project_name;
   }).then(() => {
     return project_name;
   }).catch(err => {
@@ -275,6 +280,7 @@ module.exports = {
   removeProject,
   insertProject,
   modify,
+  get,
   list,
   generateDocs
 }

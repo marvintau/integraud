@@ -19,7 +19,7 @@ var xlsx = require('xlsx');
 
 var router = express.Router();
 
-var {list, create, remove, removeProject, insertProject, modify, generateDocs} =  require('../database/confirmation');
+var {get, list, create, remove, removeProject, insertProject, modify, generateDocs} =  require('../database/confirmation');
 // import bcrypt from 'bcrypt';
 
 
@@ -57,6 +57,19 @@ router.post('/uploadTemplate', uploadTemplate, (req, res) => {
   res.send({result:'ok'})
 })
 
+router.post('/get', (req, res) => {
+
+  let {project, confirm_id} = req.body;
+  sleep(DELAY).then(() => {
+    return get(project, confirm_id);
+  }).then((result) => {
+    console.log('found result', result.length)
+    res.json({result});
+  }).catch((error) => {
+    console.log(error);
+    res.json({result:'error', reason:error});
+  })
+})
 
 router.post('/list', (req, res) => {
 
@@ -151,7 +164,8 @@ router.post('/generateDocs', (req, res) => {
       return generateDocs(project);
   })
   .then((project) => {
-    return fs.readFile(`generated/${project}/wrapped.zip`);
+    // return fs.readFile(`generated/${project}/wrapped.zip`);
+    res.send('ok');
   })
   .then((buffer) => {
     res.send(buffer);

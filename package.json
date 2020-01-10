@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "PORT=3001 node-dev ./bin/www",
+    "server": "HTTPS=true PORT=3001 node-dev ./bin/www",
     "client": "node start-client.js",
     "start": "concurrently \"npm run server\" \"npm run client\"",
     "deploy": "cross-env PORT=3000 NODE_ENV=production node-dev ./bin/www"
