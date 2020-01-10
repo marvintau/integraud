@@ -164,8 +164,7 @@ router.post('/generateDocs', (req, res) => {
       return generateDocs(project);
   })
   .then((project) => {
-    // return fs.readFile(`generated/${project}/wrapped.zip`);
-    res.send('ok');
+    return fs.readFile(`generated/${project}/wrapped.zip`);
   })
   .then((buffer) => {
     res.send(buffer);

@@ -248,27 +248,26 @@ function generateDocs(project_name){
         },
       }
     }
+    
+    fs.mkdirSync(`generated/${project_name}`, {recursive: true});
+    let archiveOutput = fs.createWriteStream(`generated/${project_name}/wrapped.zip`);
+    archive.pipe(archiveOutput)
 
-    // let archiveOutput = fs.createWriteStream(`generated/${project_name}/wrapped.zip`);
-
-    // archive.pipe(archiveOutput)
-
-    for (let rec of selected){
+    return Promise.all(selected.map((rec) => {
       let {project_name, confirm_id} = rec;
 
       let outputPath = `generated/${project_name}/RESULT.${project_name}-${confirm_id}.docx`;
 
-      createDocs({...baseProps,
+      return createDocs({...baseProps,
         output: outputPath,
         data: rec,  
+      }).then(() => {
+        archive.file(outputPath, {name:`${project_name}-${confirm_id}.docx`})
       })
-
-      // archive.file(outputPath, {name:`${project_name}-${confirm_id}.docx`})
-    }
-    // return archive.finalize();
-    return project_name;
-  }).then(() => {
-    return project_name;
+    })).then(() =>{
+      archive.finalize();
+      return project_name;
+    })
   }).catch(err => {
     console.log(err);
   })
