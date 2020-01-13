@@ -89,7 +89,7 @@ function recToDoc(record, project_name){
       // in this case the amount is single, but it has bank account.
       if (typeof BankAccount === 'string'){
         console.log(BankAccount, AccountType, 'bank');
-        amountEntries.push([`${Subject1}-${AccountType ? AccountType : 无户别}`, {amount:Amount1, account:BankAccount}]);
+        amountEntries.push([`${Subject1}-${AccountType ? AccountType : '无户别'}`, {amount:Amount1, account:BankAccount}]);
       } else {
         amountEntries.push([Subject1, Amount1]);
       }

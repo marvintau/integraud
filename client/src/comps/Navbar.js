@@ -54,7 +54,7 @@ export default () => {
   const type = user ? 'logout' : 'login';
 
   return <Navbar color="light" light expand="md">
-    <div> {user === undefined ? '' : `您好, ${nick}(${roleName})`}</div>
+    <div> {user === null ? '' : `您好, ${nick}(${roleName})`}</div>
     {user && <Nav id="show-qr-code" className="ml-auto">
       <Button data-tip data-for="qrcode-toggle" color="info">显示手机登录二维码</Button>
       <ReactTooltip id='qrcode-toggle' effect="solid" type='light' place='bottom'>

@@ -1,13 +1,17 @@
-import React, {createContext, useState} from 'react';
+import React, {createContext, useState, useEffect} from 'react';
 import {post} from './fetch';
 
 const AuthContext = createContext({user:undefined, role:undefined, status:undefined, login:()=>{}, logout:() =>{}});
 
 const AuthProvider = ({children}) => {
 
-    const [user, setUser] = useState(undefined);
-    const [role, setRole] = useState('visitor');
-    const [nick, setNick] = useState(undefined);
+    let localUser = localStorage.getItem('user'),
+        localRole = localStorage.getItem('role'),
+        localNick = localStorage.getItem('nick');
+
+    const [user, setUser] = useState(localUser);
+    const [role, setRole] = useState(localRole ? localRole : 'visitor');
+    const [nick, setNick] = useState(localNick);
     const [status, setStatus] = useState('logged_out')
     const [msg, setMsg] = useState(undefined);
     const [list, setList] = useState([]);
@@ -21,6 +25,9 @@ const AuthProvider = ({children}) => {
                 setUser(user);
                 setRole(role);
                 setNick(nick);
+                localStorage.setItem('user', user)
+                localStorage.setItem('role', role)
+                localStorage.setItem('nick', nick)
             } else {
                 setStatus('log_failed');
                 setMsg(reason);
@@ -30,8 +37,11 @@ const AuthProvider = ({children}) => {
     }
     
     const logout = () => {
-        setUser(undefined);
+        setUser(null);
         setRole('visitor');
+        localStorage.removeItem('user');
+        localStorage.removeItem('role');
+        localStorage.removeItem('nick');
         setStatus('ready');
     }
 
@@ -45,18 +55,20 @@ const AuthProvider = ({children}) => {
     }
     
     const register = (user, pass, nick) => {
+        let registerResult;
         (async function(){
             setStatus('registering');
             let {result, reason} = await post('/api/user/create', {user, pass, nick});
             if(result === 'ok'){
-                setStatus('ready');
-                setList(await post('/api/user/list', {role}));
+                registerResult = 'ok';
             } else {
                 setStatus('register_failed');
                 setMsg(reason)
+                registerResult = reason;
             }
         })();
         console.log(status, 'status');
+        return registerResult;
     }
 
     const changeRole = (user, role)=>{

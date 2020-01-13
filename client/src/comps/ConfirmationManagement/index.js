@@ -17,6 +17,8 @@ export default function(){
     const {project, members} = useContext(SelectedProjectContext);
     const {status, list, getList, templateList, getTemplateList} = useContext(ConfirmationContext);
 
+    console.log(project, members, 'selected prooject');
+
     useEffect(() => {
         (async () => {
             await getList(project);

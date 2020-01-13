@@ -5,11 +5,11 @@ import {AuthContext} from '../context/auth';
 
 export default ({component: Component, roles, ...rest}) => {
 
-    let {role} = useContext(AuthContext);
+    let {user, role} = useContext(AuthContext);
 
     return <Route {...rest} render={props => {
 
-        console.log('role conditino', roles, role);
+        console.log('role condition', roles, role, user);
         if (roles && !roles.includes(role)) {
             console.log('redirect!')
             return <Redirect to={{ pathname: '/login'}} />

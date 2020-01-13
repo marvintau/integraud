@@ -52,7 +52,7 @@ const ConfirmationProvider = ({children}) => {
 
       setStatus('upload');
       let {result, reason} = await postForm('/api/confirmation/uploadSheet', formData);
-      if(result === 'ok'){
+      if(result !== 'ok'){
         setMsg(reason);
       }
       setStatus('ready');
@@ -70,7 +70,7 @@ const ConfirmationProvider = ({children}) => {
       console.log(formData.get('confirmation_template'));
       setStatus('upload');
       let {result, reason} = await postForm('/api/confirmation/uploadTemplate', formData);
-      if(result === 'ok'){
+      if(result !== 'ok'){
         setMsg(reason);
       }
       setStatus('ready');
@@ -97,7 +97,7 @@ const ConfirmationProvider = ({children}) => {
     (async function(){
       setStatus('modify');
       let {result, reason} = await post('/api/confirmation/modify', {confirm_id, field, value});
-      if(result === 'ok'){
+      if(result !== 'ok'){
         setMsg(reason);
       }
       setStatus('ready');
@@ -110,7 +110,7 @@ const ConfirmationProvider = ({children}) => {
     (async function(){
       setStatus('modify');
       let {result, reason} = await post('/api/confirmation/remove', {confirm_id});
-      if(result === 'ok'){
+      if(result !== 'ok'){
         setMsg(reason);
       }
       setStatus('ready');
@@ -123,7 +123,7 @@ const ConfirmationProvider = ({children}) => {
     (async function(){
       setStatus('removed');
       let {result, reason} = await post('/api/confirmation/removeTemplate', {template_type});
-      if(result === 'ok'){
+      if(result !== 'ok'){
         setMsg(reason);
       }
       setStatus('ready');
@@ -133,13 +133,19 @@ const ConfirmationProvider = ({children}) => {
   }
 
   const getList = (project) => {
-    
+    console.log('getlist confirmations');
+
     (async function(){
       setStatus('getList');
       let {result, reason} = await post('/api/confirmation/list', {project});
-      if(result !== 'error'){
-        setOrigList(result)
-        
+      console.log(result, 'getlist result');
+      
+      if (result.length === 0) {
+        setStatus('expired');
+        return;
+      
+      } else if(result !== 'error'){
+        setOrigList(result)        
         filterList(filters, result);
 
       } else {
@@ -151,14 +157,12 @@ const ConfirmationProvider = ({children}) => {
 
   const getTemplateList = () => {
     (async function() {
-      setStatus('getTemplateList');
       let {result, reason} = await post('api/confirmation/listTemplates', {});
       if(result !== 'error'){
         setTemplateList(result);
       } else {
         setMsg(reason);
       }
-      setStatus('ready');
     })();
   }
 

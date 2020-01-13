@@ -103,9 +103,9 @@ function useNickname(){
     return useValidInput('昵称', 'nickname', validDict, msgDict);
 }
 
-function Register(){
+function Register({history}){
 
-    const {status, register} = useContext(AuthContext);
+    const {register} = useContext(AuthContext);
 
     const {isValid:usernameValid, content:user, element:usernameElement} = useUsername();
     const {isValid:passwordValid, content:pass, element:passwordElement} = usePassword();
@@ -113,9 +113,9 @@ function Register(){
     const {isValid:nickValid, content:nick, element:nickElement} = useNickname();
 
     const button = <Button onClick={() => {
-        register(user, pass, nick);
+        let status = register(user, pass, nick);
         console.log(user, status, 'afterRegister');
-        // props.history.push("/");
+        history.push("/login");
     }} color="primary">注册</Button>;
 
     const retButton = <Link to='/user-management'><Button outline color="info">算了</Button></Link>;
@@ -150,6 +150,7 @@ function Login(props){
 
     const msgExplained = {
         'notFound' : '用户名和密码不匹配',
+        'uniqueViolated': '已经有人用这个用户名注册过了'
     }[msg];
 
     useEffect(() => {

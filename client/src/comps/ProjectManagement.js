@@ -36,13 +36,14 @@ function ProjectCreate(){
     </tr>
 }
 
-function EnterProjectButton({project}){
+function EnterProjectButton({project, members}){
 
-    const {setProject} = useContext(SelectedProjectContext);
+    const {setProject, setMembers} = useContext(SelectedProjectContext);
     const history = useHistory();
 
     const handleLinkProject = () => {
         setProject(project);
+        setMembers(members);
         history.push(`/project`)
     }
     
@@ -72,7 +73,7 @@ function ProjectRow({index, style, data}){
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
     >
-        <div className="col-4"><EnterProjectButton {...{project}} /></div>
+        <div className="col-4"><EnterProjectButton {...{project, members}} /></div>
         <div className="col-2"><RemoveProjectButton  {...{hovered, project}} /></div>
         <div className="col-6"><AssignSelect {...{project, members}} /></div>
     </div>
@@ -119,6 +120,7 @@ export default function (props){
     }
 
     return <Col>
+        <h2>项目列表</h2>
         {projectCreate}
         {projectListElem}
         <Link to='/'><Button color="primary" style={{margin: '10px'}}>返回</Button></Link>
