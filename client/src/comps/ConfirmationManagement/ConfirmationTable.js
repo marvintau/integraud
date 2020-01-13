@@ -28,8 +28,9 @@ export default function({project, status, data, user, role, members}){
     : undefined;
     
     const head = <div style={{display:'flex', background:'#343a40', color:'#FFF', alignItems:'center'}}>
+        <div style={{padding:'15px'}} className="col-md-1">函证类型</div>
         <div style={{padding:'15px'}} className="col-md-4"><AddressFilter /></div>
-        <div style={{padding:'15px'}} className="col-md-2">函证金额</div>
+        <div style={{padding:'15px'}} className="col-md-2">函证内容</div>
         <div style={{padding:'15px'}} className="col-md-4"><StatusFilter /></div>
         <div style={{padding:'15px'}} className="col-md-2"><NotesFilter /></div>
     </div>

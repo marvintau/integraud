@@ -18,8 +18,7 @@ export default function ConfirmationRow({index, data, style}){
     const [hovered, setHovered] = useState(false);
     const {modify} = useContext(ConfirmationContext);
 
-    const {confirm_id, confirmee_info, confirmed_amount, confirm_status, notes, history, qrcode} = data[index];
-
+    const {confirm_type, confirm_id, confirmee_info, confirmed_amount, confirm_status, notes, history, qrcode} = data[index];
     const project = data[index].project_name;
 
     const rowStyle = {
@@ -31,6 +30,7 @@ export default function ConfirmationRow({index, data, style}){
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
     >
+        <div className="col-md-1" ><div style={{margin:'10px'}}>{confirm_type}</div></div>
         <div className="col-md-4" ><Address {...{data:confirmee_info}}/></div>
         <div className="col-md-2" ><ConfirmedAmount {...{data:confirmed_amount}}/></div>
         <div className="col-md-4" ><MaintainStatus {...{hovered, project, confirm_id, confirm_status, modify}} /></div>

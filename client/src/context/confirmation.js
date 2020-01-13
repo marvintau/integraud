@@ -198,13 +198,14 @@ const ConfirmationProvider = ({children}) => {
     a.download = filename;
     document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
     a.click();    
-    a.remove();  //afterwards we remove the element again     
+    // a.remove();  //afterwards we remove the element again     
   }
 
   const generateDocs = (project) => {
     (async function() {
       setStatus('generating_docs');
       let archivedBlob = await postFetchDownload('api/confirmation/generateDocs', {project});
+      console.log(archivedBlob, 'send from back');
       createDownloadable(archivedBlob, `${project}.zip`);
       setStatus('ready');
     })();

@@ -90,8 +90,8 @@ router.post('/listTemplates', (req, res) => {
   sleep(DELAY).then(() => {
     return fs.readdir('public/template/docx/')
   }).then((result) => {
-    console.log(result);
-    res.json({result});
+    let templates = result.filter(e => e.startsWith('TEMPLATE'));
+    res.json({result: templates});
   }).catch((error) => {
     console.log(error);
     res.json({result:'error', reason:error});
@@ -164,6 +164,12 @@ router.post('/generateDocs', (req, res) => {
       return generateDocs(project);
   })
   .then((project) => {
+    return fs.stat(`generated/${project}/wrapped.zip`)
+    .then((res) => {
+      console.log(res);
+      return project;
+    })
+  }).then((project) => {
     return fs.readFile(`generated/${project}/wrapped.zip`);
   })
   .then((buffer) => {

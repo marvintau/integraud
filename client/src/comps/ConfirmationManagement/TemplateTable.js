@@ -1,6 +1,6 @@
 import React, {useContext, useState, useEffect} from 'react';
 import FileSelect from './FileSelect';
-import {Input, Table, Button} from 'reactstrap';
+import {Col, Input, Table, Button} from 'reactstrap';
 
 import {ConfirmationContext} from '../../context/confirmation';
 
@@ -28,11 +28,11 @@ export default function TemplateTable({list, user, role, members}){
     ? <UploadTemplate />
     : undefined;
 
-    const body = <Table>
-        <thead><tr>
-            <th>类型</th>
-            <th>文件名</th>
-            <th>操作</th>
+    const body = <div style={{height:'200px', width:'100%', overflowY:'scroll'}}><Table>
+        <thead><tr style={{background:'#343a40', color:'#FFF', alignItems:'center'}}>
+            <th style={{position:'sticky', top:'0'}}>类型</th>
+            <th style={{position:'sticky', top:'0'}}>文件名</th>
+            <th style={{position:'sticky', top:'0'}}>操作</th>
         </tr></thead>
         <tbody>
             {list.map((name, i) => {
@@ -44,10 +44,10 @@ export default function TemplateTable({list, user, role, members}){
                 </tr>
             })}
         </tbody>
-    </Table>
+    </Table></div>
 
-    return <div>
+    return <Col style={{width:'100%'}}>
         {uploadTemplate}
         {body}
-    </div>
+    </Col>
 }

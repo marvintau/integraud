@@ -59,7 +59,7 @@ function recToDoc(record, project_name){
   // basic information
   doc.confirm_id = record.ConfirmID;
   doc.unit_name = record.CompanyName;
-  doc.comfirm_type = record.ConfirmType;
+  doc.confirm_type = record.ConfirmType;
 
   // confirmee information
   const {
@@ -78,12 +78,21 @@ function recToDoc(record, project_name){
 
   let amountEntries = [];
   if(Subject1 !== undefined){
-    if (Amount1.length > 0 && BankAccount.length > 0){
-      for (let i = 0; i < BankAccount.length; i++){
-        amountEntries.push([`${Subject1}-${BankAccount[i]}-${Array.isArray(AccountType) ? AccountType[i] : AccountType}`, Amount1[i]]);
+    if (Array.isArray(Amount1) && Amount1.length > 0){
+      if(Array.isArray(BankAccount)){
+        for (let i = 0; i < BankAccount.length; i++){
+          const accountType = Array.isArray(AccountType) ? AccountType[i] : AccountType;
+          amountEntries.push([`${Subject1}-${accountType}`, {amount:Amount1[i], account:BankAccount[i]}]);
+        }
       }
     } else {
-      amountEntries.push([Subject1, Amount1]);
+      // in this case the amount is single, but it has bank account.
+      if (typeof BankAccount === 'string'){
+        console.log(BankAccount, AccountType, 'bank');
+        amountEntries.push([`${Subject1}-${AccountType ? AccountType : 无户别}`, {amount:Amount1, account:BankAccount}]);
+      } else {
+        amountEntries.push([Subject1, Amount1]);
+      }
     }
   }
   if(Subject2 !== undefined){
@@ -162,6 +171,7 @@ function insertProject(arr, project_name){
 
   arr = processArray(arr);
   let gripped = gripID(arr);
+  // console.log(gripped);
   let docs = gripped.map((e) => recToDoc(e, project_name));
 
   return Promise.all(docs.map(async function(doc){
@@ -169,7 +179,7 @@ function insertProject(arr, project_name){
     doc.qrcode = await generateQR(`${project_name}<|<|>|>${confirm_id}`);
     return doc;
   })).then(resolvedDocs => {
-    console.log(resolvedDocs);
+    // console.log(resolvedDocs);
     return confirmations.insert(resolvedDocs);
   })
 }
@@ -236,26 +246,32 @@ function generateDocs(project_name){
 
     let selected = result;
 
-    console.log(fs.readdirSync('generated'), 'check folder');
-
-    const template = 'public/template/docx/TEMPLATE.test.docx';
-    const baseProps = {
-      template,
-      additionalJsContext: {
-        qrCode: dataUrl => {
-          const data = dataUrl.slice('data:image/gif;base64,'.length);
-          return { width: 2, height: 2, data, extension: '.gif' };
-        },
-      }
-    }
+    // let templateList = fs.readdirSync('public/template/docx').map(e=>e.startsWith('TEMPLATE'));
     
     fs.mkdirSync(`generated/${project_name}`, {recursive: true});
     let archiveOutput = fs.createWriteStream(`generated/${project_name}/wrapped.zip`);
     archive.pipe(archiveOutput)
 
     return Promise.all(selected.map((rec) => {
-      let {project_name, confirm_id} = rec;
+      let {project_name, confirm_id, confirm_type, confirmed_amount} = rec;
 
+      for (let key in confirmed_amount.contents){
+        if (!isNaN(confirmed_amount.contents[key])){
+          confirmed_amount.contents[key] = confirmed_amount.contents[key].toLocaleString('en-us', {maximumFractionDigits:2, minimumFractionDigits:2})
+        }
+      }
+
+      const template = `public/template/docx/TEMPLATE.${confirm_type}.docx`;
+      const baseProps = {
+        template,
+        additionalJsContext: {
+          qrCode: dataUrl => {
+            const data = dataUrl.slice('data:image/gif;base64,'.length);
+            return { width: 2, height: 2, data, extension: '.gif' };
+          },
+        }
+      }
+  
       let outputPath = `generated/${project_name}/RESULT.${project_name}-${confirm_id}.docx`;
 
       return createDocs({...baseProps,
@@ -265,7 +281,8 @@ function generateDocs(project_name){
         archive.file(outputPath, {name:`${project_name}-${confirm_id}.docx`})
       })
     })).then(() =>{
-      archive.finalize();
+      return archive.finalize();
+    }).then(() => {
       return project_name;
     })
   }).catch(err => {

@@ -16,7 +16,14 @@ export default function ConfirmedAmount({data={}}){
     }
 
     const amounts = Object.values(contents).map((value, i) => {
-        const amount = Number(value).toLocaleString('en-us', {maximumFractionDigits:2, minimumFractionDigits:2});
+        let amount;
+        if (value.amount !== undefined){
+            amount = value.amount;
+        } else if (isNaN(Number(value))){
+            amount = value;
+        } else {
+            amount = Number(value).toLocaleString('en-us', {maximumFractionDigits:2, minimumFractionDigits:2});
+        }
         return  <div key={i} style={amountStyle} >
             {amount}
         </div>
