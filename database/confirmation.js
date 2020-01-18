@@ -13,7 +13,6 @@ let confirmations = new DataStore({
     filename: path.resolve(__dirname, './confirmation.db'),
     autoload: true
 })
-confirmations.ensureIndex({fieldName: 'confirm_id', unique: true});
 
 
 const generateQR = async text => {

@@ -2,8 +2,6 @@ import React, {useState, useContext} from 'react';
 import {Link, useHistory} from 'react-router-dom';
 import {Col, Button} from 'reactstrap';
 
-import QRCodeScanner from './QRCodeScanner';
-
 import {AuthContext} from '../context/auth';
 
 export default function Home(){
@@ -24,20 +22,6 @@ export default function Home(){
     userManage = <Link to="/user-management">
       <Button className="col-md-3" outline style={{margin: '10px'}} color="primary">用户管理</Button>
     </Link>
-  }
-
-  const warpToConfirmManagement = (result) => {
-    
-    const url = new URL(result.text);
-
-    const goto = url.searchParams.get('goto');
-    const user = url.searchParams.get('user');
-
-    if(goto !== 'confirmation'){
-      setMessage('您可能扫描了错误的二维码。');
-    } else {
-      history.push(`/confirmation-mobile?user=${user}`);
-    }    
   }
 
   return <>
