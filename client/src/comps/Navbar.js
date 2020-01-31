@@ -37,7 +37,7 @@ export default () => {
     if(user){
       console.log('acruallly runned')
       new QRCode(qrcode.current, {
-        text: `https://47.105.171.13:3000/confirmation-mobile`,
+        text: `https://www.stewardship.tech:3000/confirmation-mobile`,
         width: 256,
         height: 256,
       });
