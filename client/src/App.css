@@ -20,3 +20,13 @@ td {
     transform: rotate(360deg);
   }
 }
+
+body {
+  font-size: 14px;
+  /* transform: scale(0.9);
+  transform-origin: 0 0; */
+}
+
+.btn {
+  font-size: 14px;
+}

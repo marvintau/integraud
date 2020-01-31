@@ -11,8 +11,6 @@ import {AuthContext} from "../context/auth";
 import {ProjectContext} from '../context/projects';
 import {SelectedProjectContext} from '../context/selectedProject';
 
-import '../App.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { ConfirmButton } from './ComfirmButton';
 
 function ProjectCreate(){

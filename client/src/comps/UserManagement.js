@@ -8,8 +8,6 @@ import {ConfirmButton} from './ComfirmButton';
 
 import {AuthContext} from '../context/auth';
 
-import '../App.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { Link } from 'react-router-dom';
 
 function HoveredSelect({hovered, value, options, action}){

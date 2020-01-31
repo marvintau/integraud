@@ -2,7 +2,7 @@ import React from 'react';
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 
 import RoleBasedRoute from './comps/RoleBasedRoute';
-import Login from './comps/Login';
+import Login from './comps/login';
 import Logout from './comps/Logout'
 import Home from './comps/Home';
 import Navbar from './comps/Navbar';
@@ -18,10 +18,12 @@ import {ProjectProvider} from './context/projects';
 import {SelectedProjectProvider} from './context/selectedProject';
 import {ConfirmationProvider} from './context/confirmation';
 
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css';
 
 function App() {  
 
-  return <div className="App">
+  return <div>
     <AuthProvider>
       <ProjectProvider>
         <SelectedProjectProvider>
