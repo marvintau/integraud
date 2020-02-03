@@ -22,8 +22,12 @@ const ProjectProvider = ({children}) => {
     const listProjects = () => {
         console.log('list projects', user, role);
         (async function(){
+
+            let list = await post('/api/project/list', {user, role});
+            list.sort(({project_name:P1}, {project_name:P2}) => P1 < P2 ? -1 : P1 > P2 ? 1 : 0);
+
             setStatus('loading');
-            setList(await post('/api/project/list', {user, role}));
+            setList(list);
             setStatus('ready');
         })()
     }
@@ -34,6 +38,7 @@ const ProjectProvider = ({children}) => {
             setStatus('loading');
             let {result, reason} = await post('/api/project/create', {project});
             if(result === 'ok'){
+                console.log('create project done');
                 setStatus('ready');
             } else {
                 setStatus('create_failed');
