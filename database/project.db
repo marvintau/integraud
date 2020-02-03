@@ -1,4 +1,5 @@
 {"project_name":"测试(7)公司","_id":"0PDuQ25zRip108Se","members":{"Marvin":"manager","Vaughn":"member"}}
+{"project_name":"再来一个新公司","_id":"1BjTVApf06FXtXP3"}
 {"project_name":"测试(28)公司","_id":"2J7ixhNz89dVq4su","members":{"user_1":"member"}}
 {"project_name":"测试(18)公司","_id":"2Tp3TsqR1Dcz1UXX","members":{"user_1":"member"}}
 {"project_name":"测试(8)公司","_id":"3KnRBDRDUT7Kp6Gi","members":{"user_1":"manager","new_user":"member"}}
@@ -49,4 +50,3 @@
 {"project_name":"测试(31)公司","_id":"yekXuKYnIIWL4w6D"}
 {"project_name":"测试(27)公司","_id":"zttU5JA61DwRX43a"}
 {"$$indexCreated":{"fieldName":"project_name","unique":true,"sparse":false}}
-{"project_name":"再来一个新公司","_id":"1BjTVApf06FXtXP3"}

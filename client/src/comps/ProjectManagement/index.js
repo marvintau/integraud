@@ -3,15 +3,17 @@ import React, {useState, useEffect, useContext} from 'react';
 import {Input, Button, Col, Table} from 'reactstrap';
 import {Spinner} from 'reactstrap';
 import {FixedSizeList as List} from 'react-window';
-import AssignSelect from './AssignSelect';
+import AssignSelect from '../AssignSelect';
 
 import {Link, useHistory } from 'react-router-dom';
 
-import {AuthContext} from "../context/auth";
-import {ProjectContext} from '../context/projects';
-import {SelectedProjectContext} from '../context/selectedProject';
+import {AuthContext} from "../../context/auth";
+import {ProjectContext} from '../../context/projects';
+import {SelectedProjectContext} from '../../context/selectedProject';
 
-import { ConfirmButton } from './ComfirmButton';
+import { ConfirmButton } from '../ComfirmButton';
+
+import {ProjectNameFilter} from './FilterableHeader';
 
 function ProjectCreate(){
     const [project, setProject] = useState('');
@@ -117,6 +119,11 @@ export default function (props){
     return <Col>
         <h2>项目列表</h2>
         {projectCreate}
+        <div style={{marginLeft:"10px", display:'flex', background:'#343a40', color:'#FFF', alignItems:'center'}}>
+            <div style={{margin:"0px 10px", padding:'15px'}} className="col-md-4"><ProjectNameFilter /></div>
+            <div style={{margin:"0px 10px", padding:'15px'}} className="col-md-2"></div>
+            <div style={{margin:"0px 10px", padding:'15px'}} className="col-md-6">成员管理</div>
+        </div>
         {projectListElem}
         <Link to='/'><Button color="primary" style={{margin: '10px'}}>返回</Button></Link>
     </Col>
