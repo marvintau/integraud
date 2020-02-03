@@ -39,12 +39,12 @@ const ProjectProvider = ({children}) => {
             let {result, reason} = await post('/api/project/create', {project});
             if(result === 'ok'){
                 console.log('create project done');
-                setStatus('ready');
+                setStatus('created');
             } else {
                 setStatus('create_failed');
                 setMsg(reason);
             }
-            setList(await post('/api/project/list', {user, role}));
+            listProjects();
         })()
     }
 
@@ -54,12 +54,12 @@ const ProjectProvider = ({children}) => {
             let {result, reason} = await post('/api/project/remove', {project});
             console.log('remove project', result);
             if(result === 'ok'){
-                setStatus('ready');
+                setStatus('removed');
             } else {
                 setStatus('remove_failed');
                 setMsg(reason);
             }
-            setList(await post('/api/project/list', {user, role}));
+            listProjects();
         })()
     }
 
@@ -69,12 +69,12 @@ const ProjectProvider = ({children}) => {
             setStatus('loading');
             let {result, reason} = await post('/api/project/assign_member', {project, user:selUser, role:selRole});
             if(result === 'ok'){
-                setStatus('ready');
+                setStatus('assigned');
             } else {
                 setStatus('assign_failed');
                 setMsg(reason);
             }
-            setList(await post('/api/project/list', {user, role}));
+            listProjects();
         })()
     }
 
@@ -84,12 +84,12 @@ const ProjectProvider = ({children}) => {
             let {result, reason} = await post('/api/project/remove_member', {project, user:removed});
             console.log(result, reason, 'remove member');
             if(result === 'ok'){
-                setStatus('ready');
+                setStatus('removed');
             } else {
                 setStatus('remove_failed');
                 setMsg(reason);
             }
-            setList(await post('/api/project/list', {user, role}));
+            listProjects();
         })()
     }
 

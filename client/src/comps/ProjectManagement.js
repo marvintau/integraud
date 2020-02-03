@@ -95,7 +95,7 @@ export default function (props){
         : undefined;
 
     let projectListElem;
-    if(projStatus !== 'ready' || authStatus !== 'ready'){
+    if(projStatus !== 'ready'){
         projectListElem = <Spinner color="primary" size="xs" style={{margin:'10px'}} />;
     } else {
 
