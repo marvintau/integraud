@@ -9,3 +9,5 @@
 {"user_name":"quakeke","password":"asd,.123","nickname":"陶哈哈","role":"normal","_id":"nwL1ffh4Vkil7OzN"}
 {"user_name":"Romero","password":"asdasdasd,.123","nickname":"罗枚","role":"normal","_id":"qGpJjZlm6pt7vn4F"}
 {"$$indexCreated":{"fieldName":"user_name","unique":true,"sparse":false}}
+{"user_name":"public","password":"asd,.123","nickname":"公共账户","role":"normal","_id":"PhClAyMaoWTEtY3S"}
+{"user_name":"public","password":"asd,.123","nickname":"公共账户","role":"governer","_id":"PhClAyMaoWTEtY3S"}
