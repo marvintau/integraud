@@ -19,10 +19,7 @@ function ProjectCreate(){
 
     const butt = <Button
         color='success'
-        onClick={() => {
-            console.log('create!', createProject);
-            createProject(project)
-        }}
+        onClick={() => {createProject(project)}}
         style={{width: '100%'}}>
         创建项目
     </Button>

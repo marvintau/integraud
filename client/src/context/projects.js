@@ -34,9 +34,9 @@ const ProjectProvider = ({children}) => {
             setStatus('loading');
             let {result, reason} = await post('/api/project/create', {project});
             if(result === 'ok'){
-                setStatus('added');
+                setStatus('ready');
             } else {
-                setStatus('add_failed');
+                setStatus('create_failed');
                 setMsg(reason);
             }
             setList(await post('/api/project/list', {user, role}));
