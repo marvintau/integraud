@@ -3,11 +3,10 @@
 {"user_name":"new_user","password":"asd,.123","nickname":"陶哈哈","role":"normal","_id":"5AsyzxQ4vpEAtYPf"}
 {"user_name":"Watson","password":"asdasdasd,.123","nickname":"华生","role":"manager","_id":"Fqu96t9PWVKzffqG"}
 {"user_name":"quasi-lord","password":"all4Jesus.","nickname":"管理员","role":"supreme","_id":"MNWwGWswpLQRfeX9"}
+{"user_name":"public","password":"asd,.123","nickname":"公共账户","role":"governer","_id":"PhClAyMaoWTEtY3S"}
 {"user_name":"user_2","password":"asd,.123","nickname":"陶哈哈","role":"normal","_id":"ZY232wtQ5OQkDh7j"}
 {"user_name":"Vaughn","password":"asdasdasd,.123","nickname":"沃恩","role":"normal","_id":"bm0Zz5GTBU6M3Oh2"}
 {"user_name":"new_user1","password":"asd,.123","nickname":"陶哈哈","role":"normal","_id":"dg60SOXuZKstPUei"}
 {"user_name":"quakeke","password":"asd,.123","nickname":"陶哈哈","role":"normal","_id":"nwL1ffh4Vkil7OzN"}
 {"user_name":"Romero","password":"asdasdasd,.123","nickname":"罗枚","role":"normal","_id":"qGpJjZlm6pt7vn4F"}
 {"$$indexCreated":{"fieldName":"user_name","unique":true,"sparse":false}}
-{"user_name":"public","password":"asd,.123","nickname":"公共账户","role":"normal","_id":"PhClAyMaoWTEtY3S"}
-{"user_name":"public","password":"asd,.123","nickname":"公共账户","role":"governer","_id":"PhClAyMaoWTEtY3S"}
