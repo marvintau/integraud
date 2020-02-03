@@ -38,7 +38,6 @@ const ProjectProvider = ({children}) => {
             setStatus('loading');
             let {result, reason} = await post('/api/project/create', {project});
             if(result === 'ok'){
-                console.log('create project done');
                 setStatus('created');
             } else {
                 setStatus('create_failed');
