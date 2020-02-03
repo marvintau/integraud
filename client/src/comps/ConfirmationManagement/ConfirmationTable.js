@@ -22,7 +22,7 @@ function UploadTable({project}){
             <FileSelect {...{upload:uploadSheet, form:{project}}}/>
             <div ><span>{msgExplained}</span></div>
         </div>
-        <div className="col-md-2"><a href="template/xlsx/ConfirmSummaryTemplate.xlsx" download>下载一个示例</a></div>
+        <div className="col-md-2"><a href="ConfirmSummaryTemplate.xlsx" download>下载一个示例</a></div>
         <div className="col-md-2"><Button color="primary" onClick={() => generateDocs(project)}>生成确认函文档</Button></div>
     </div>
 }
