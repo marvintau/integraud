@@ -11,60 +11,13 @@ var debug = require('debug')('integraud:server');
 var https = require('https');
 var http = require('http');
 
-// var privateKey  = fs.readFileSync('cert/www.stewardship.tech.key');
-// var certificate = fs.readFileSync('cert/www.stewardship.tech.pem');
-// var credentials = {key: privateKey, cert: certificate};
+var privateKey  = fs.readFileSync('cert/www.stewardship.tech.key');
+var certificate = fs.readFileSync('cert/www.stewardship.tech.pem');
+var credentials = {key: privateKey, cert: certificate};
 
 /**
  * Create HTTP server.
  */
 
-// var server = https.createServer(credentials, app);
-var server = http.createServer(app);
-/**
- * Listen on provided port, on all network interfaces.
- */
-
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
-
-/**
- * Event listener for HTTP server "error" event.
- */
-
-function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
-
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
-
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
-}
-
-/**
- * Event listener for HTTP server "listening" event.
- */
-
-function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  debug('Listening on ' + bind);
-}
+https.createServer(credentials, app).listen(3001);
+http.createServer(app).listen(3000);
