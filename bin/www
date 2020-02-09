@@ -19,5 +19,4 @@ var credentials = {key: privateKey, cert: certificate};
  * Create HTTP server.
  */
 
-https.createServer(credentials, app).listen(3001);
-http.createServer(app).listen(3000);
+https.createServer(credentials, app).listen(3000);
