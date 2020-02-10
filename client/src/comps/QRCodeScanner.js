@@ -46,7 +46,7 @@ export default function QRCodeScanner ({buttonName, success}) {
     }, [reader, deviceID]);
 
     const decodeOnce = (codeReader, selectedDeviceId) => {
-    codeReader.decodeFromInputVideoDevice(selectedDeviceId, 'video')
+    codeReader.decodeFromInputVideoDevice(undefined, 'video')
         .then((result) => {
             success(result);
         }).catch((err) => {
