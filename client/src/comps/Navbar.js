@@ -1,9 +1,9 @@
-import React, {useContext, useEffect, createRef} from 'react';
+import React, {useContext, useState, useEffect, createRef} from 'react';
 import {AuthContext} from '../context/auth';
 import {Navbar, Nav, Button} from 'reactstrap';
 import ReactTooltip from 'react-tooltip'
 
-import {useHistory} from 'react-router-dom';
+import {useHistory, useLocation} from 'react-router-dom';
 
 import * as QRCode from 'easyqrcodejs';
 
@@ -33,6 +33,8 @@ export default () => {
 
   const {user, role, nick} = useContext(AuthContext);
 
+  const [isMobile, setMobile] = useState(false);
+
   useEffect(() => {
     if(user){
       console.log('acruallly runned')
@@ -44,6 +46,15 @@ export default () => {
     }
   }, [user])
 
+  const location = useLocation();
+  useEffect(() => {
+    console.log(location);
+    if(location.pathname.includes('confirmation-mobile')){
+      console.log('mobile1');
+      setMobile(true);
+    }
+  }, [location])
+
   const roleName = {
     supreme: '最高管理员',
     governer: '超级管理员',
@@ -53,7 +64,7 @@ export default () => {
 
   const type = user ? 'logout' : 'login';
 
-  return <Navbar color="light" light expand="md">
+  const navbar =  <Navbar color="light" light expand="md">
     <div> {user === null ? '' : `您好, ${nick}(${roleName})`}</div>
     {user && <Nav id="show-qr-code" className="ml-auto">
       <Button data-tip data-for="qrcode-toggle" color="info">显示手机登录二维码</Button>
@@ -65,4 +76,6 @@ export default () => {
       <LogButton type={type} />
     </Nav>
   </Navbar>
+
+  return isMobile ? <div></div> : navbar;
 }
