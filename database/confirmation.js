@@ -261,6 +261,13 @@ function generateDocs(project_name){
       }
 
       const template = `public/template/docx/TEMPLATE.${confirm_type}.docx`;
+
+      try {
+        fs.accessSync(template);
+      } catch (err) {
+        template = `public/template/docx/TEMPLATE.其他.docx`;
+      }
+
       const baseProps = {
         template,
         additionalJsContext: {
